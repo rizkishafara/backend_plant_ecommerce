@@ -57,3 +57,34 @@ func Login(email, password string) utils.Respon {
 	Respon.Message = "Berhasil Login"
 	return Respon
 }
+func Register(email,password,fullname,datecreate,uuid string) utils.Respon {
+	dbEngine := db.ConnectDB()
+	var Respon utils.Respon
+
+	cekemail, err := dbEngine.QueryString(`SELECT email FROM users WHERE email=(?)`, email)
+	if err != nil {
+		Respon.Success = false
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	if cekemail != nil {
+		Respon.Success = false
+		Respon.Message = "Email sudah terdaftar"
+		return Respon
+	}
+
+	_ , err = dbEngine.QueryString("INSERT INTO users (id,email,PASSWORD,fullname,date_created) VALUES (?,?,?,?,?)", uuid,email,password,fullname,datecreate)
+
+	if err != nil {
+		// log.Fatal(err)
+		Respon.Success = false
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	
+	Respon.Success = true
+	Respon.Message = "Berhasil Registrasi"
+	return Respon
+}
