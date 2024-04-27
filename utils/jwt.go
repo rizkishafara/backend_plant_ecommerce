@@ -1,0 +1,34 @@
+package utils
+
+import (
+	"time"
+
+	"github.com/golang-jwt/jwt/v4"
+)
+
+type jwtCustomClaims struct {
+	Email   string `json:"email"`
+	Idreq   string `json:"idreq"`
+	Expired string `json:"expiredtime"`
+	jwt.StandardClaims
+}
+
+func Generatejwt(email, idreq, expiredtime string) (string, int) {
+	claims := &jwtCustomClaims{
+		email,
+		idreq,
+		expiredtime,
+		jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	t, err := token.SignedString([]byte("@9r33n3l394nt"))
+	if err != nil {
+		return err.Error(), 400
+	}
+
+	return t, 200
+}
