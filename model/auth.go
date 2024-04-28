@@ -42,7 +42,7 @@ func Login(email, password string) utils.Respon {
 	loc, _ := time.LoadLocation("Asia/Jakarta")
 	expiredtime := time.Now().Local().In(loc).Add(time.Hour * 24).Format("2006-01-02 15:04:05")
 
-	result, code := utils.Generatejwt(email, datauser[0]["id_req_pemohon"], expiredtime)
+	result, code := utils.Generatejwt(email, datauser[0]["id"], expiredtime)
 	if code != 200 {
 		Respon.Success = false
 		Respon.Message = result
@@ -88,3 +88,5 @@ func Register(email,password,fullname,datecreate,uuid string) utils.Respon {
 	Respon.Message = "Berhasil Registrasi"
 	return Respon
 }
+
+
