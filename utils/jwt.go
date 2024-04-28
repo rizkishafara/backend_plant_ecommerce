@@ -32,9 +32,9 @@ func Generatejwt(email, idreq, expiredtime string) (string, int) {
 
 	return t, 200
 }
-func GetValJWT(token *jwt.Token, key string) (string, error) {
+func GetValJWT(token *jwt.Token, key string) (string) {
 	// tokenval := c.Locals("user").(*jwt.Token)
 	claims := token.Claims.(jwt.MapClaims)
 
-	return claims[key].(string), nil
+	return claims[key].(string)
 }
