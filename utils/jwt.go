@@ -25,14 +25,14 @@ func Generatejwt(email, idreq, expiredtime string) (string, int) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	t, err := token.SignedString([]byte("@9r33n3l394nt"))
+	t, err := token.SignedString(Secretkey)
 	if err != nil {
 		return err.Error(), 400
 	}
 
 	return t, 200
 }
-func GetValJWT(token *jwt.Token, key string) (string) {
+func GetValJWT(token *jwt.Token, key string) string {
 	// tokenval := c.Locals("user").(*jwt.Token)
 	claims := token.Claims.(jwt.MapClaims)
 
