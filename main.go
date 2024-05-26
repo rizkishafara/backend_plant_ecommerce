@@ -37,8 +37,7 @@ func main() {
 		// Go to next middleware:
 		return c.Next()
 	})
-	routes.Auth(app)
-	signingKey := []byte("@9r33n3l394nt")
+	signingKey := []byte("@9r33n3l394nt123")
 	configjwt := jwtware.Config{
 		TokenLookup:  "header:Authorization",
 		ErrorHandler: app.ErrorHandler,
@@ -48,6 +47,8 @@ func main() {
 	app2 := app.Group("/v1")
 	app2.Use(jwtware.New(configjwt))
 
+	routes.Auth(app)
+	routes.Profile(app2)
 
 	host := fmt.Sprintf(":%d", config.ServerPort)
 	log.Fatal(app.Listen(host))
