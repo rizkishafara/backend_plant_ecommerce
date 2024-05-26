@@ -20,9 +20,17 @@ func GetProfileUser(id, email string) utils.Respon {
 		Respon.Message = "User tidak terdaftar"
 		return Respon
 	}
+	var dataResponse = make(map[string]interface{})
+
+	if getProfile != nil {
+		dataResponse["id"] = getProfile[0]["id"]
+		dataResponse["email"] = getProfile[0]["email"]
+		dataResponse["fullname"] = getProfile[0]["fullname"]
+		dataResponse["photo"] = getProfile[0]["photo"]
+	}
 
 	Respon.Success = true
-	Respon.Data = getProfile
+	Respon.Data = dataResponse
 	Respon.Message = "Berhasil Get Profile"
 	return Respon
 }
@@ -59,8 +67,12 @@ func GetCountVoucher(id string) utils.Respon {
 		Respon.Message = err.Error()
 		return Respon
 	}
+	var datares = make(map[string]interface{})
+	if getCountVoucher != nil {
+		datares["count"] = getCountVoucher[0]["count"]
+	}
 	Respon.Success = true
-	Respon.Data = getCountVoucher
+	Respon.Data = datares
 	Respon.Message = "Berhasil get count voucher"
 	return Respon
 }
@@ -82,9 +94,13 @@ func GetCountLoyalty(id string) utils.Respon {
 		Respon.Message = err.Error()
 		return Respon
 	}
+	var datares = make(map[string]interface{})
+	if totalLoyalty != nil {
+		datares["count"] = totalLoyalty[0]["count"]
+	}
 
 	Respon.Success = true
-	Respon.Data = totalLoyalty
+	Respon.Data = datares
 	Respon.Message = "Berhasil get count loyalty"
 	return Respon
 }

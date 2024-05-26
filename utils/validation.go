@@ -1,6 +1,10 @@
 package utils
 
-import "regexp"
+import (
+	"regexp"
+
+	"golang.org/x/crypto/bcrypt"
+)
 
 func IsValidEmail(email string) bool {
 	// Define a regex pattern for a basic email validation
@@ -8,4 +12,8 @@ func IsValidEmail(email string) bool {
 
 	// Check if the email matches the regex pattern
 	return emailRegex.MatchString(email)
+}
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }

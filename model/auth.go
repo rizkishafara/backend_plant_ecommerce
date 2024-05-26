@@ -47,7 +47,7 @@ func Login(email, password string) utils.Respon {
 	dbEngine := db.ConnectDB()
 	var Respon utils.Respon
 
-	cekemail, err := dbEngine.QueryString(`SELECT email FROM users WHERE email=(?)`, email)
+	cekemail, err := dbEngine.QueryString(`SELECT email, password FROM users WHERE email=(?)`, email)
 	if err != nil {
 		// log.Fatal(err)
 		Respon.Success = false
@@ -60,14 +60,14 @@ func Login(email, password string) utils.Respon {
 		Respon.Message = "Email tidak terdaftar"
 		return Respon
 	}
-	passnew, err := utils.HashPassword(password)
-	if err != nil {
+	errc := utils.CheckPasswordHash(password, cekemail[0]["password"])
+	if !errc {
 		Respon.Success = false
 		Respon.Message = err.Error()
 		return Respon
 	}
 
-	datauser, err := dbEngine.QueryString("SELECT uuid, email FROM users WHERE email = ? AND password = ?", email, passnew)
+	datauser, err := dbEngine.QueryString("SELECT uuid, email FROM users WHERE email = ? ", email)
 
 	if err != nil {
 		// log.Fatal(err)
@@ -93,8 +93,11 @@ func Login(email, password string) utils.Respon {
 	}
 
 	datares := make(map[string]interface{})
-	datares["datauser"] = datauser
-	datares["token"] = result
+	if datauser!=nil {
+		datares["email"] = datauser[0]["email"]
+		datares["id"] = datauser[0]["uuid"]
+		datares["token"] = result
+	}
 	Respon.Success = true
 	Respon.Data = datares
 	Respon.Message = "Berhasil Login"
