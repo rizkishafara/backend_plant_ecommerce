@@ -10,6 +10,7 @@ type Config struct {
 	ServerPort  int    `mapstructure:"SERVER_PORT"`
 
 	// Database
+	Db string `mapstructure:"DB"`
 	DbDsn string `mapstructure:"DB_DSN"`
 
 	// Email

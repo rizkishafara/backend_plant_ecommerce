@@ -5,6 +5,7 @@ import (
 	"log"
 	"tanaman/config"
 
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	"xorm.io/xorm"
 )
@@ -12,9 +13,7 @@ import (
 func ConnectDB() *xorm.Engine {
 	config := config.LoadConfig(".")
 
-	fmt.Println("Loading config: ", config.DbDsn)
-
-	engine, err := xorm.NewEngine("postgres", config.DbDsn)
+	engine, err := xorm.NewEngine(config.Db, config.DbDsn)
 	if err != nil {
 		fmt.Println("connect postgres error", err)
 		log.Fatal(err)
