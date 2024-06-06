@@ -1,6 +1,8 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+)
 
 type Config struct {
 	Environment string `mapstructure:"ENVIRONMENT"`
@@ -23,17 +25,19 @@ func LoadConfig(path string) (config Config) {
 	v := viper.New()
 
 	// Default Config
-	v.SetDefault("ENVIRONMENT", "development")
+	v.SetDefault("ENVIRONMENT", "deployment")
 	v.SetDefault("SERVER_HOST", "localhost")
 	v.SetDefault("SERVER_PORT", 8080)
 	// v.SetDefault("DB_DSN", "host=localhost user=root dbname=grelegant port=8080 sslmode=disable")
 
-	v.SetConfigFile("gredev.env")
+	v.SetConfigFile("greprod.env")
 	v.SetConfigType("env")
 	v.AddConfigPath(path)
 	v.AutomaticEnv()
 
 	_ = v.ReadInConfig()
 	_ = v.Unmarshal(&config)
+
+	// fmt.Println("Config loaded", v)
 	return
 }

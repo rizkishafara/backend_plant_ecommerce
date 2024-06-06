@@ -47,18 +47,18 @@ func LoadConfigDynamic() {
 			Port:         "8080",
 		},
 		DatabaseDev: DatabaseDevType{
-			Host:         "103.171.85.168", //deploy dev host
-			Username:     "admin",
-			Password:     "root",
-			DatabaseName: "devgre",
-			Port:         "8080",
+			Host:         "ep-empty-grass-a2xemsef.eu-central-1.pg.koyeb.app", //deploy dev host
+			Username:     "koyeb-adm",
+			Password:     "qxALFflgc3N7	",
+			DatabaseName: "planting-db",
+			Port:         "5432",
 		},
 		DatabaseProd: DatabaseProdType{
-			Host:         "103.171.85.168", //deploy prod host
-			Username:     "admin",
-			Password:     "root",
-			DatabaseName: "devgre",
-			Port:         "8080",
+			Host:         "ep-empty-grass-a2xemsef.eu-central-1.pg.koyeb.app", //deploy prod host
+			Username:     "koyeb-adm",
+			Password:     "qxALFflgc3N7	",
+			DatabaseName: "planting-db",
+			Port:         "5432",
 		},
 	}
 }
