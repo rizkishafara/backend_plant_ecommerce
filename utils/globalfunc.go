@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -26,6 +27,15 @@ func GetFileTypeFromBase64Header(header string) (string, error) {
 	default:
 		return "", errors.New("unsupported file type")
 	}
+}
+
+func DeleteFile(file, jenis string) error {
+	path := fmt.Sprintf("%s/%s", jenis, file)
+	err := os.Remove("/uploads/" + path)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func Encrypt(plaintext string) (string, error) {
@@ -81,4 +91,3 @@ func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(bytes), err
 }
-

@@ -22,7 +22,7 @@ func GetProfileUser(c *fiber.Ctx) error {
 	fmt.Println("id", id)
 
 	if id == "" || email == "" {
-		response.Success = false
+		response.Status = 404
 		response.Message = "User tidak terdaftar"
 		return c.JSON(response)
 	}
@@ -30,7 +30,14 @@ func GetProfileUser(c *fiber.Ctx) error {
 	return c.JSON(model.GetProfileUser(id, email))
 }
 func UpdateProfileUser(c *fiber.Ctx) error {
-	id := c.FormValue("id")
+	id := utils.GetValJWT(c.Locals("user").(*jwt.Token), "idreq")
+
+	if id == "" {
+		response.Status = 404
+		response.Message = "User tidak terdaftar"
+		return c.JSON(response)
+	}
+
 	fullname := c.FormValue("fullname")
 	photo := c.FormValue("photo")
 	phototype := c.FormValue("phototype")
@@ -41,13 +48,17 @@ func UpdateProfileUser(c *fiber.Ctx) error {
 			"jpeg": true,
 		}
 		if !allowedTypes[phototype] {
-			return c.Status(fiber.StatusBadRequest).SendString("Unsupported file type")
+			response.Status = 500
+			response.Message = "Unsupported file type"
+			return c.JSON(response)
 		}
 
 		// Dekode data base64 menjadi byte
 		fileBytes, err := base64.StdEncoding.DecodeString(photo)
 		if err != nil {
-			return c.Status(fiber.StatusBadRequest).SendString("Invalid base64 data")
+			response.Status = 500
+			response.Message = "Invalid base64 data"
+			return c.JSON(response)
 		}
 
 		fileID := uuid.New()
@@ -55,11 +66,13 @@ func UpdateProfileUser(c *fiber.Ctx) error {
 		newFileName := fmt.Sprintf("profile_%s.%s", fileID, phototype)
 		data := model.UpdateProfile(fullname, newFileName, id)
 
-		if data.Success {
+		if data.Status == 200 {
 
 			filePath := filepath.Join("./uploads/profile", newFileName)
 			if err := ioutil.WriteFile(filePath, fileBytes, 0644); err != nil {
-				return c.Status(fiber.StatusInternalServerError).SendString("Unable to save file")
+				response.Status = 500
+				response.Message = "Unable to save file"
+				return c.JSON(response)
 			}
 		}
 		return c.JSON(data)
@@ -74,7 +87,7 @@ func GetCountVoucher(c *fiber.Ctx) error {
 	id := utils.GetValJWT(c.Locals("user").(*jwt.Token), "idreq")
 
 	if id == "" || email == "" {
-		response.Success = false
+		response.Status = 404
 		response.Message = "JWT Invalid"
 		return c.JSON(response)
 	}
@@ -87,7 +100,7 @@ func GetCountLoyalty(c *fiber.Ctx) error {
 	id := utils.GetValJWT(c.Locals("user").(*jwt.Token), "idreq")
 
 	if id == "" || email == "" {
-		response.Success = false
+		response.Status = 404
 		response.Message = "JWT Invalid"
 		return c.JSON(response)
 	}

@@ -11,6 +11,8 @@ func Auth(app *fiber.App) {
 	app.Post("/auth/register", controller.Register)
 	app.Post("/auth/forgotpassword", controller.ForgotPassword)
 	app.Post("/auth/updatepassword", controller.UpdatePassword)
+
+	app.Get("/:jenis/:file", controller.GetFile)
 	// app.Post("/auth/login", controllers.Login)
 	// app.Post("/auth/lupapin", controllers.Lupapin)
 	// app.Post("/auth/updateprofil", controllers.Updateprofile)

@@ -1,22 +1,25 @@
 package model
 
 import (
+	"fmt"
+	"tanaman/config"
 	"tanaman/db"
 	"tanaman/utils"
 )
 
 func GetProfileUser(id, email string) utils.Respon {
+	config := config.LoadConfig(".")
 	dbEngine := db.ConnectDB()
 
 	var Respon utils.Respon
 	getProfile, err := dbEngine.QueryString(`SELECT uuid as id, email, fullname, photo FROM users WHERE uuid=(?) AND email=(?)`, id, email)
 	if err != nil {
-		Respon.Success = false
+		Respon.Status = 500
 		Respon.Message = err.Error()
 		return Respon
 	}
 	if getProfile == nil {
-		Respon.Success = false
+		Respon.Status = 404
 		Respon.Message = "User tidak terdaftar"
 		return Respon
 	}
@@ -26,34 +29,48 @@ func GetProfileUser(id, email string) utils.Respon {
 		dataResponse["id"] = getProfile[0]["id"]
 		dataResponse["email"] = getProfile[0]["email"]
 		dataResponse["fullname"] = getProfile[0]["fullname"]
-		dataResponse["photo"] = getProfile[0]["photo"]
+		// dataResponse["photo"] = getProfile[0]["photo"]
+		dataResponse["photo"] = fmt.Sprintf("%s/profile/%s", config.ServerHost, getProfile[0]["photo"])
 	}
 
-	Respon.Success = true
+	Respon.Status = 200
 	Respon.Data = dataResponse
-	Respon.Message = "Berhasil Get Profile"
+	Respon.Message = "success"
 	return Respon
 }
 func UpdateProfile(fullname, photo, id string) utils.Respon {
 	dbEngine := db.ConnectDB()
 	var Respon utils.Respon
 
+	oldPhoto, _ := dbEngine.QueryString(`SELECT photo FROM users WHERE uuid=(?)`, id)
+
 	var query string
 
-	if photo != "" {
+	if photo != "" && fullname != "" {
 		query = "UPDATE users SET fullname = '" + fullname + "', photo ='" + photo + "' WHERE uuid = '" + id + "'"
-	} else {
+	} else if photo != "" && fullname == "" {
+		query = "UPDATE users SET photo ='" + photo + "' WHERE uuid = '" + id + "'"
+	} else if fullname != "" {
 		query = "UPDATE users SET fullname = '" + fullname + "' WHERE uuid = '" + id + "'"
+	} else {
+		Respon.Status = 404
+		Respon.Message = "Tidak ada yang diubah"
+		return Respon
 	}
 
 	_, err := dbEngine.QueryString(query)
 	if err != nil {
-		Respon.Success = false
+		Respon.Status = 500
 		Respon.Message = err.Error()
 		return Respon
 	}
-	Respon.Success = true
-	Respon.Message = "Berhasil Update Profile"
+
+	if photo != "" && oldPhoto[0]["photo"] != "" {
+		go utils.DeleteFile(oldPhoto[0]["photo"], "profile")
+	}
+
+	Respon.Status = 200
+	Respon.Message = "success"
 	return Respon
 }
 func GetCountVoucher(id string) utils.Respon {
@@ -63,7 +80,7 @@ func GetCountVoucher(id string) utils.Respon {
 												INNER JOIN logs_claim_voucher ON claim.uuid=logs_claim_voucher.claim_id
 												WHERE claim.user_id=(?) AND claim.active='1'`, id)
 	if err != nil {
-		Respon.Success = false
+		Respon.Status = 500
 		Respon.Message = err.Error()
 		return Respon
 	}
@@ -71,9 +88,9 @@ func GetCountVoucher(id string) utils.Respon {
 	if getCountVoucher != nil {
 		datares["count"] = getCountVoucher[0]["count"]
 	}
-	Respon.Success = true
+	Respon.Status = 200
 	Respon.Data = datares
-	Respon.Message = "Berhasil get count voucher"
+	Respon.Message = "success"
 	return Respon
 }
 func GetCountLoyalty(id string) utils.Respon {
@@ -90,7 +107,7 @@ func GetCountLoyalty(id string) utils.Respon {
 													) AS counts`, id, id)
 
 	if err != nil {
-		Respon.Success = false
+		Respon.Status = 500
 		Respon.Message = err.Error()
 		return Respon
 	}
@@ -99,8 +116,8 @@ func GetCountLoyalty(id string) utils.Respon {
 		datares["count"] = totalLoyalty[0]["count"]
 	}
 
-	Respon.Success = true
+	Respon.Status = 200
 	Respon.Data = datares
-	Respon.Message = "Berhasil get count loyalty"
+	Respon.Message = "success"
 	return Respon
 }

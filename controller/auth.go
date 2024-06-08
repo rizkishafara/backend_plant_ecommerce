@@ -23,13 +23,13 @@ func Login(c *fiber.Ctx) error {
 	password := c.FormValue("password")
 
 	if email == "" || password == "" {
-		response.Success = false
+		response.Status = 404
 		response.Message = "Email dan Password wajib diisi"
 		return c.JSON(response)
 	}
 
 	if !utils.IsValidEmail(email) {
-		response.Success = false
+		response.Status = 404
 		response.Message = "Email tidak valid"
 		return c.JSON(response)
 	}
@@ -46,13 +46,13 @@ func Register(c *fiber.Ctx) error {
 	phototype := c.FormValue("phototype")
 
 	if !utils.IsValidEmail(email) {
-		response.Success = false
+		response.Status = 404
 		response.Message = "Email tidak valid"
 		return c.JSON(response)
 	}
 
 	if email == "" || password == "" || fullname == "" {
-		response.Success = false
+		response.Status = 404
 		response.Message = "Data wajib diisi"
 		return c.JSON(response)
 	}
@@ -64,13 +64,17 @@ func Register(c *fiber.Ctx) error {
 			"jpeg": true,
 		}
 		if !allowedTypes[phototype] {
-			return c.Status(fiber.StatusBadRequest).SendString("Unsupported file type")
+			response.Status = 500
+			response.Message = "Unsupported file type"
+			return c.JSON(response)
 		}
 
 		// Dekode data base64 menjadi byte
 		fileBytes, err := base64.StdEncoding.DecodeString(photo)
 		if err != nil {
-			return c.Status(fiber.StatusBadRequest).SendString("Invalid base64 data")
+			response.Status = 500
+			response.Message = "Invalid base64 data"
+			return c.JSON(response)
 		}
 
 		fileID := uuid.New()
@@ -79,11 +83,13 @@ func Register(c *fiber.Ctx) error {
 
 		data := model.Register(email, password, fullname, time.Now().Format("2006-01-02"), createUUid.String(), newFileName)
 
-		if data.Success {
+		if data.Status == 200 {
 
 			filePath := filepath.Join("./uploads/profile", newFileName)
 			if err := ioutil.WriteFile(filePath, fileBytes, 0644); err != nil {
-				return c.Status(fiber.StatusInternalServerError).SendString("Unable to save file")
+				response.Status = 500
+				response.Message = "Unable to save file"
+				return c.JSON(response)
 			}
 		}
 		return c.JSON(data)
@@ -97,13 +103,13 @@ func ForgotPassword(c *fiber.Ctx) error {
 	email := c.FormValue("email")
 
 	if email == "" {
-		response.Success = false
+		response.Status = 404
 		response.Message = "Email dan Password wajib diisi"
 		return c.JSON(response)
 	}
 
 	if !utils.IsValidEmail(email) {
-		response.Success = false
+		response.Status = 404
 		response.Message = "Email tidak valid"
 		return c.JSON(response)
 	}
@@ -114,10 +120,15 @@ func UpdatePassword(c *fiber.Ctx) error {
 	password := c.FormValue("password")
 
 	if param == "" || password == "" {
-		response.Success = false
+		response.Status = 404
 		response.Message = "value null"
 		return c.JSON(response)
 	}
 
 	return c.JSON(model.UpdatePassword(param, password))
+}
+func GetFile(c *fiber.Ctx) error {
+	jenis := c.Params("jenis")
+	file := c.Params("file")
+	return c.SendFile(fmt.Sprintf("./uploads/%s/%s", jenis, file))
 }
