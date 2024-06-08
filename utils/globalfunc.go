@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -31,15 +32,16 @@ func GetFileTypeFromBase64Header(header string) (string, error) {
 }
 func SaveFile(newFileName, fileType, jenis string, file []byte) (string, error) {
 
-	filePath := fmt.Sprintf("%s/%s", jenis, newFileName)
+	path:= fmt.Sprintf("/uploads/%s", jenis)
+	filePath := fmt.Sprintf("/%s", newFileName)
 
-	if _, err := os.Stat(fmt.Sprintf("/uploads/%s", jenis)); os.IsNotExist(err) {
-		err := os.Mkdir(fmt.Sprintf("/uploads/%s", jenis), 0755)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		err := os.Mkdir(path, 0755)
 		if err != nil {
 			return "", errors.New("unable to create folder")
 		}
 	}
-	if err := ioutil.WriteFile("/uploads/"+filePath, file, 0644); err != nil {
+	if err := ioutil.WriteFile(path+filePath, file, 0644); err != nil {
 		return "", errors.New("unable to save file")
 	}
 	return filePath, nil
