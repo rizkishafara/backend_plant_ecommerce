@@ -4,11 +4,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"path/filepath"
 	"strings"
 	"tanaman/model"
+	"tanaman/utils"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -49,13 +48,15 @@ func AddProduct(c *fiber.Ctx) error {
 
 		fileID := uuid.New()
 
-		fileType= strings.Split(fileType, "/")[1]
+		fileType = strings.Split(fileType, "/")[1]
 
 		newFileName := fmt.Sprintf("product_%s.%s", fileID, fileType)
-		filePath := filepath.Join("./uploads/product", newFileName)
-		if err := ioutil.WriteFile(filePath, fileBytes, 0644); err != nil {
+
+		_, err = utils.SaveFile(newFileName, fileType, "product", fileBytes)
+
+		if err != nil {
 			response.Status = 500
-			response.Message = "Unable to save file"
+			response.Message = err.Error()
 			return c.JSON(response)
 		}
 

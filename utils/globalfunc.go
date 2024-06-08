@@ -10,7 +10,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"path"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -32,7 +31,7 @@ func GetFileTypeFromBase64Header(header string) (string, error) {
 }
 func SaveFile(newFileName, fileType, jenis string, file []byte) (string, error) {
 
-	path:= fmt.Sprintf("/uploads/%s", jenis)
+	path := fmt.Sprintf("/uploads/%s", jenis)
 	filePath := fmt.Sprintf("/%s", newFileName)
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
