@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"tanaman/model"
 	"tanaman/utils"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
@@ -64,7 +65,7 @@ func UpdateProfileUser(c *fiber.Ctx) error {
 		fileID := uuid.New()
 
 		newFileName := fmt.Sprintf("profile_%s.%s", fileID, phototype)
-		data := model.UpdateProfile(fullname, newFileName, id)
+		data := model.UpdateProfile(fullname, newFileName, id, time.Now().Format("2006-01-02"))
 
 		if data.Status == 200 {
 
@@ -77,7 +78,7 @@ func UpdateProfileUser(c *fiber.Ctx) error {
 		}
 		return c.JSON(data)
 	} else {
-		data := model.UpdateProfile(fullname, "", id)
+		data := model.UpdateProfile(fullname, "", id, time.Now().Format("2006-01-02"))
 		return c.JSON(data)
 	}
 }

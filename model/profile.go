@@ -38,7 +38,7 @@ func GetProfileUser(id, email string) utils.Respon {
 	Respon.Message = "success"
 	return Respon
 }
-func UpdateProfile(fullname, photo, id string) utils.Respon {
+func UpdateProfile(fullname, photo, id, date string) utils.Respon {
 	dbEngine := db.ConnectDB()
 	var Respon utils.Respon
 
@@ -47,11 +47,11 @@ func UpdateProfile(fullname, photo, id string) utils.Respon {
 	var query string
 
 	if photo != "" && fullname != "" {
-		query = "UPDATE users SET fullname = '" + fullname + "', photo ='" + photo + "' WHERE uuid = '" + id + "'"
+		query = "UPDATE users SET fullname = '" + fullname + "', photo ='" + photo + ", date_update = '" + date + "' WHERE uuid = '" + id + "'"
 	} else if photo != "" && fullname == "" {
-		query = "UPDATE users SET photo ='" + photo + "' WHERE uuid = '" + id + "'"
+		query = "UPDATE users SET photo ='" + photo + ", date_update = '" + date + "' WHERE uuid = '" + id + "'"
 	} else if fullname != "" {
-		query = "UPDATE users SET fullname = '" + fullname + "' WHERE uuid = '" + id + "'"
+		query = "UPDATE users SET fullname = '" + fullname + ", date_update = '" + date + "' WHERE uuid = '" + id + "'"
 	} else {
 		Respon.Status = 404
 		Respon.Message = "Tidak ada yang diubah"
