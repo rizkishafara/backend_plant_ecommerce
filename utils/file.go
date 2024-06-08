@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 )
@@ -22,13 +23,14 @@ func GetFileTypeFromBase64Header(header string) (string, error) {
 }
 func SaveFile(newFileName, fileType, jenis string, file []byte) (string, error) {
 
-	path := fmt.Sprintf("/uploads/%s", jenis)
+	path := fmt.Sprintf("./uploads/%s", jenis)
 	filePath := fmt.Sprintf("/%s", newFileName)
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		err := os.Mkdir(path, 0755)
 		if err != nil {
-			return "", errors.New("unable to create folder")
+			fmt.Println(err)
+			return "", errors.New("unable to create directory")
 		}
 	}
 	if err := ioutil.WriteFile(path+filePath, file, 0644); err != nil {
@@ -38,11 +40,12 @@ func SaveFile(newFileName, fileType, jenis string, file []byte) (string, error) 
 
 }
 
-func DeleteFile(file, jenis string) error {
-	path := fmt.Sprintf("%s/%s", jenis, file)
-	err := os.Remove("/uploads/" + path)
+func DeleteFile(filename, jenis string) error {
+	path := fmt.Sprintf("%s/%s", jenis, filename)
+	
+	err := os.Remove("./uploads/" + path)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
 	return nil
 }

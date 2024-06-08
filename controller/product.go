@@ -80,3 +80,55 @@ func AddProduct(c *fiber.Ctx) error {
 
 	return c.JSON(data)
 }
+func UpdateProduct(c *fiber.Ctx) error {
+	productid := c.FormValue("productid")
+
+	name := c.FormValue("name")
+	description := c.FormValue("description")
+	price := c.FormValue("price")
+	discount := c.FormValue("discount")
+	category_id := c.FormValue("category_id")
+
+	if name == "" || description == "" || price == "" || discount == "" || category_id == "" {
+		response.Status = 404
+		response.Message = "Data wajib diisi"
+		return c.JSON(response)
+	}
+
+	data, err := model.UpdateProduct(productid, name, description, price, discount, category_id, time.Now().Format("2006-01-02"))
+	if err != nil {
+		response.Status = 500
+		response.Message = err.Error()
+		return c.JSON(response)
+	}
+
+	return c.JSON(data)
+}
+func DeleteProduct(c *fiber.Ctx) error {
+	productid := c.FormValue("productid")
+
+	if productid == "" {
+		response.Status = 404
+		response.Message = "Data wajib diisi"
+		return c.JSON(response)
+	}
+
+	delFile,err:=model.DeleteAllProductImage(productid)
+	if err != nil {
+		response.Status = 500
+		response.Message = err.Error()
+		return c.JSON(response)
+	}
+	if delFile.Status != 200 {
+		return c.JSON(delFile)
+	}
+
+	data, err := model.DeleteProduct(productid)
+	if err != nil {
+		response.Status = 500
+		response.Message = err.Error()
+		return c.JSON(response)
+	}
+
+	return c.JSON(data)
+}

@@ -7,8 +7,8 @@ import (
 	"tanaman/utils"
 )
 
+var Config = config.LoadConfig(".")
 func GetProfileUser(id, email string) utils.Respon {
-	config := config.LoadConfig(".")
 	dbEngine := db.ConnectDB()
 
 	var Respon utils.Respon
@@ -30,7 +30,7 @@ func GetProfileUser(id, email string) utils.Respon {
 		dataResponse["email"] = getProfile[0]["email"]
 		dataResponse["fullname"] = getProfile[0]["fullname"]
 		// dataResponse["photo"] = getProfile[0]["photo"]
-		dataResponse["photo"] = fmt.Sprintf("%s/profile/%s", config.ServerHost, getProfile[0]["photo"])
+		dataResponse["photo"] = fmt.Sprintf("%s/profile/%s", Config.ServerHost, getProfile[0]["photo"])
 	}
 
 	Respon.Status = 200

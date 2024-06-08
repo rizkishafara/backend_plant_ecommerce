@@ -23,16 +23,24 @@ func Profile(app fiber.Router) {
 	app.Get("/profile/getcountvoucher", controller.GetCountVoucher)
 	app.Get("/profile/getcountloyalty", controller.GetCountLoyalty)
 }
+func Home(app fiber.Router) {
+	app.Get("/home/banner", controller.GetBanner)
+	app.Get("/home/popular-category", controller.GetPopularCategory)
+	app.Get("/home/newest-product", controller.GetNewestProduct)
+}
 
 func Product(app fiber.Router) {
+
 	// app.Get("/product/getproduct", controller.GetProduct)
 	// app.Get("/product/getproductbyid", controller.GetProductByID)
 	// app.Get("/product/getproductbycategory", controller.GetProductByCategory)
 	// app.Get("/product/getproductbysearch", controller.GetProductBySearch)
 	// app.Get("/product/getproductbycategorysearch", controller.GetProductByCategorySearch)
+
+	// FOR ADMIN ONLY
 	app.Post("/product/addproduct", controller.AddProduct)
-	// app.Post("/product/updateproduct", controller.UpdateProduct)
-	// app.Post("/product/deleteproduct", controller.DeleteProduct)
+	app.Post("/product/updateproduct", controller.UpdateProduct)
+	app.Post("/product/deleteproduct", controller.DeleteProduct)
 	// app.Post("/product/addproductimage", controller.AddProductImage)
 	// app.Post("/product/updateproductimage", controller.UpdateProductImage)
 	// app.Post("/product/deleteproductimage", controller.DeleteProductImage)
