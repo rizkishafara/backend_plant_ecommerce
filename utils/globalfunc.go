@@ -5,56 +5,13 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"os"
-	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 var Secretkey = []byte("@9r33n3l394nt123")
-
-func GetFileTypeFromBase64Header(header string) (string, error) {
-	switch {
-	case strings.Contains(header, "image/jpeg"):
-		return "jpeg", nil
-	case strings.Contains(header, "image/jpg"):
-		return "jpg", nil
-	case strings.Contains(header, "image/png"):
-		return "png", nil
-	default:
-		return "", errors.New("unsupported file type")
-	}
-}
-func SaveFile(newFileName, fileType, jenis string, file []byte) (string, error) {
-
-	path := fmt.Sprintf("/uploads/%s", jenis)
-	filePath := fmt.Sprintf("/%s", newFileName)
-
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		err := os.Mkdir(path, 0755)
-		if err != nil {
-			return "", errors.New("unable to create folder")
-		}
-	}
-	if err := ioutil.WriteFile(path+filePath, file, 0644); err != nil {
-		return "", errors.New("unable to save file")
-	}
-	return filePath, nil
-
-}
-
-func DeleteFile(file, jenis string) error {
-	path := fmt.Sprintf("%s/%s", jenis, file)
-	err := os.Remove("/uploads/" + path)
-	if err != nil {
-		return err
-	}
-	return nil
-}
 
 func Encrypt(plaintext string) (string, error) {
 	block, err := aes.NewCipher(Secretkey)
