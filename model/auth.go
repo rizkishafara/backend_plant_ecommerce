@@ -14,19 +14,19 @@ func Register(email, password, fullname, datecreate, uuid, photo string) utils.R
 
 	cekemail, err := dbEngine.QueryString(`SELECT email FROM users WHERE email=(?)`, email)
 	if err != nil {
-		Respon.Success = false
+		Respon.Status = 500
 		Respon.Message = err.Error()
 		return Respon
 	}
 
 	if cekemail != nil {
-		Respon.Success = false
+		Respon.Status = 404
 		Respon.Message = "Email sudah terdaftar"
 		return Respon
 	}
 	passnew, err := utils.HashPassword(password)
 	if err != nil {
-		Respon.Success = false
+		Respon.Status = 500
 		Respon.Message = err.Error()
 		return Respon
 	}
@@ -34,13 +34,13 @@ func Register(email, password, fullname, datecreate, uuid, photo string) utils.R
 
 	if err != nil {
 		// log.Fatal(err)
-		Respon.Success = false
+		Respon.Status = 500
 		Respon.Message = err.Error()
 		return Respon
 	}
 
-	Respon.Success = true
-	Respon.Message = "Berhasil Registrasi"
+	Respon.Status = 200
+	Respon.Message = "success"
 	return Respon
 }
 func Login(email, password string) utils.Respon {
@@ -50,19 +50,19 @@ func Login(email, password string) utils.Respon {
 	cekemail, err := dbEngine.QueryString(`SELECT email, password FROM users WHERE email=(?)`, email)
 	if err != nil {
 		// log.Fatal(err)
-		Respon.Success = false
+		Respon.Status = 500
 		Respon.Message = err.Error()
 		return Respon
 	}
 
 	if cekemail == nil {
-		Respon.Success = false
+		Respon.Status = 404
 		Respon.Message = "Email tidak terdaftar"
 		return Respon
 	}
 	errc := utils.CheckPasswordHash(password, cekemail[0]["password"])
 	if !errc {
-		Respon.Success = false
+		Respon.Status = 404
 		Respon.Message = err.Error()
 		return Respon
 	}
@@ -71,13 +71,13 @@ func Login(email, password string) utils.Respon {
 
 	if err != nil {
 		// log.Fatal(err)
-		Respon.Success = false
+		Respon.Status = 500
 		Respon.Message = err.Error()
 		return Respon
 	}
 
 	if datauser == nil {
-		Respon.Success = false
+		Respon.Status = 404
 		Respon.Message = "Email atau Password salah!"
 		return Respon
 	}
@@ -87,7 +87,7 @@ func Login(email, password string) utils.Respon {
 
 	result, code := utils.Generatejwt(email, datauser[0]["uuid"], expiredtime)
 	if code != 200 {
-		Respon.Success = false
+		Respon.Status = code
 		Respon.Message = result
 		return Respon
 	}
@@ -98,9 +98,9 @@ func Login(email, password string) utils.Respon {
 		datares["id"] = datauser[0]["uuid"]
 		datares["token"] = result
 	}
-	Respon.Success = true
+	Respon.Status = 200
 	Respon.Data = datares
-	Respon.Message = "Berhasil Login"
+	Respon.Message = "success"
 	return Respon
 }
 func ForgotPassword(email string) utils.Respon {
@@ -109,13 +109,13 @@ func ForgotPassword(email string) utils.Respon {
 
 	cekemail, err := dbEngine.QueryString(`SELECT uuid,email FROM users WHERE email=(?)`, email)
 	if err != nil {
-		Respon.Success = false
+		Respon.Status = 500
 		Respon.Message = err.Error()
 		return Respon
 	}
 
 	if cekemail == nil {
-		Respon.Success = false
+		Respon.Status = 404
 		Respon.Message = "Email tidak terdaftar"
 		return Respon
 	}
@@ -126,7 +126,7 @@ func ForgotPassword(email string) utils.Respon {
 
 	encrypted, err := utils.Encrypt(newparam)
 	if err != nil {
-		Respon.Success = false
+		Respon.Status = 500
 		Respon.Message = err.Error()
 		return Respon
 	}
@@ -134,12 +134,12 @@ func ForgotPassword(email string) utils.Respon {
 
 	errs := utils.SendForgotPassword(email, encrypted)
 	if errs != nil {
-		Respon.Success = false
+		Respon.Status = 500
 		Respon.Message = errs.Error()
 		return Respon
 	}
-	Respon.Success = true
-	Respon.Message = "Sukses kirim email"
+	Respon.Status = 200
+	Respon.Message = "success"
 	return Respon
 }
 func UpdatePassword(param, password string) utils.Respon {
@@ -147,7 +147,7 @@ func UpdatePassword(param, password string) utils.Respon {
 	var Respon utils.Respon
 	decrypted, err := utils.Decrypt(param)
 	if err != nil {
-		Respon.Success = false
+		Respon.Status = 500
 		Respon.Message = err.Error()
 		return Respon
 	}
@@ -158,7 +158,7 @@ func UpdatePassword(param, password string) utils.Respon {
 
 	passnew, err := utils.HashPassword(password)
 	if err != nil {
-		Respon.Success = false
+		Respon.Status = 500
 		Respon.Message = err.Error()
 		return Respon
 	}
@@ -166,11 +166,11 @@ func UpdatePassword(param, password string) utils.Respon {
 	_, err = dbEngine.QueryString("UPDATE users SET password = ? WHERE email = ? AND uuid = ?", passnew, email, uuid)
 
 	if err != nil {
-		Respon.Success = false
+		Respon.Status = 500
 		Respon.Message = err.Error()
 		return Respon
 	}
-	Respon.Success = true
-	Respon.Message = "Berhasil Update Password"
+	Respon.Status = 200
+	Respon.Message = "success"
 	return Respon
 }

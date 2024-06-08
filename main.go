@@ -49,6 +49,8 @@ func main() {
 
 	routes.Auth(app)
 	routes.Profile(app2)
+	routes.Home(app2)
+	routes.Product(app2)
 
 	host := fmt.Sprintf(":%d", config.ServerPort)
 	log.Fatal(app.Listen(host))

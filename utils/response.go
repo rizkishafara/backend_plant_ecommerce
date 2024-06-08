@@ -1,7 +1,7 @@
 package utils
 
 type Respon struct {
-	Success bool        `json:"success"`
+	Status  int         `json:"status"`
 	Data    interface{} `json:"data"`
 	Message string      `json:"message"`
 }

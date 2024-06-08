@@ -5,28 +5,13 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"io"
-	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 var Secretkey = []byte("@9r33n3l394nt123")
-
-func GetFileTypeFromBase64Header(header string) (string, error) {
-	switch {
-	case strings.Contains(header, "image/jpeg"):
-		return "jpeg", nil
-	case strings.Contains(header, "image/jpg"):
-		return "jpg", nil
-	case strings.Contains(header, "image/png"):
-		return "png", nil
-	default:
-		return "", errors.New("unsupported file type")
-	}
-}
 
 func Encrypt(plaintext string) (string, error) {
 	block, err := aes.NewCipher(Secretkey)
@@ -81,4 +66,3 @@ func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(bytes), err
 }
-
