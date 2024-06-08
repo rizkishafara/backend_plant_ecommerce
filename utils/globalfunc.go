@@ -29,13 +29,12 @@ func GetFileTypeFromBase64Header(header string) (string, error) {
 		return "", errors.New("unsupported file type")
 	}
 }
-func SaveFile(fileUUID, fileType, jenis string, file []byte) (string, error) {
+func SaveFile(newFileName, fileType, jenis string, file []byte) (string, error) {
 
-	newFileName := fmt.Sprintf("%s_%s.%s", jenis, fileUUID, fileType)
 	filePath := fmt.Sprintf("%s/%s", jenis, newFileName)
 
-	if _, err := os.Stat(fmt.Sprintf("/uploads/%s",jenis)); os.IsNotExist(err) {
-		err := os.Mkdir(fmt.Sprintf("/uploads/%s",jenis), 0755)
+	if _, err := os.Stat(fmt.Sprintf("/uploads/%s", jenis)); os.IsNotExist(err) {
+		err := os.Mkdir(fmt.Sprintf("/uploads/%s", jenis), 0755)
 		if err != nil {
 			return "", errors.New("unable to create folder")
 		}
