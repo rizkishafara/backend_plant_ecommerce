@@ -54,6 +54,7 @@ func Login(email, password string) utils.Respon {
 		Respon.Message = err.Error()
 		return Respon
 	}
+	defer dbEngine.Close()
 
 	if cekemail == nil {
 		Respon.Status = 404
@@ -93,7 +94,7 @@ func Login(email, password string) utils.Respon {
 	}
 
 	datares := make(map[string]interface{})
-	if datauser!=nil {
+	if datauser != nil {
 		datares["email"] = datauser[0]["email"]
 		datares["id"] = datauser[0]["uuid"]
 		datares["token"] = result
