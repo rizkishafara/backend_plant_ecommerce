@@ -47,9 +47,9 @@ func main() {
 	app2 := app.Group("/v1")
 	app2.Use(jwtware.New(configjwt))
 
+	routes.Home(app)
 	routes.Auth(app)
 	routes.Profile(app2)
-	routes.Home(app2)
 	routes.Product(app2)
 
 	host := fmt.Sprintf(":%d", config.ServerPort)
