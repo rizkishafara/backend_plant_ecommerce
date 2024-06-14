@@ -9,7 +9,7 @@ func GetProvince() utils.Respon {
 	dbEngine := db.ConnectDB()
 
 	var Respon utils.Respon
-	getProvince, err := dbEngine.QueryString(`SELECT id, province_id as province FROM users`)
+	getProvince, err := dbEngine.QueryString(`SELECT id, province_id as province FROM ref_province`)
 	if err != nil {
 		Respon.Status = 500
 		Respon.Message = err.Error()

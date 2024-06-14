@@ -122,7 +122,7 @@ func GetCountLoyalty(id string) utils.Respon {
 	Respon.Message = "success"
 	return Respon
 }
-func CreateAddress(uuid, id_user, address, phone, province, city, district, village, postalcode, datecreate, recipent, label string) utils.Respon {
+func AddAddress(uuid, id_user, address, phone, province, city, district, village, postalcode, datecreate, recipent, label string) utils.Respon {
 	dbEngine := db.ConnectDB()
 	var Respon utils.Respon
 

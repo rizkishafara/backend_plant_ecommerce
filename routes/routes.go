@@ -29,6 +29,9 @@ func Profile(app fiber.Router) {
 	app.Post("/profile/updateprofile", controller.UpdateProfileUser)
 	app.Get("/profile/getcountvoucher", controller.GetCountVoucher)
 	app.Get("/profile/getcountloyalty", controller.GetCountLoyalty)
+
+	app.Post("/profile/addaddress", controller.AddAddress)
+	app.Get("/profile/getaddress", controller.GetAddress)
 }
 
 func Catalog(app *fiber.App) {
