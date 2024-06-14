@@ -9,7 +9,7 @@ func GetProvince() utils.Respon {
 	dbEngine := db.ConnectDB()
 
 	var Respon utils.Respon
-	getProvince, err := dbEngine.QueryString(`SELECT id, province_id as ref_province FROM users`)
+	getProvince, err := dbEngine.QueryString(`SELECT id, province_id as province FROM users`)
 	if err != nil {
 		Respon.Status = 500
 		Respon.Message = err.Error()
@@ -30,7 +30,7 @@ func GetCity(province_id string) utils.Respon {
 	dbEngine := db.ConnectDB()
 
 	var Respon utils.Respon
-	getCity, err := dbEngine.QueryString(`SELECT id, kabkot_name as kabkot FROM ref_kabkot WHERE prov_id=(?)`, province_id)
+	getCity, err := dbEngine.QueryString(`SELECT id, kabkot_name as city FROM ref_kabkot WHERE prov_id=(?)`, province_id)
 	if err != nil {
 		Respon.Status = 500
 		Respon.Message = err.Error()
@@ -51,7 +51,7 @@ func GetDistrict(city_id string) utils.Respon {
 	dbEngine := db.ConnectDB()
 
 	var Respon utils.Respon
-	getDistrict, err := dbEngine.QueryString(`SELECT id, kecamatan_name as kecamatan FROM ref_kecamatan WHERE kabkot_id=(?)`, city_id)
+	getDistrict, err := dbEngine.QueryString(`SELECT id, kecamatan_name as district FROM ref_kecamatan WHERE kabkot_id=(?)`, city_id)
 	if err != nil {
 		Respon.Status = 500
 		Respon.Message = err.Error()
@@ -72,7 +72,7 @@ func GetVillage(district_id string) utils.Respon {
 	dbEngine := db.ConnectDB()
 
 	var Respon utils.Respon
-	getVillage, err := dbEngine.QueryString(`SELECT id, kelurahan_name as kelurahan FROM ref_kelurahan WHERE kecamatan_id=(?)`, district_id)
+	getVillage, err := dbEngine.QueryString(`SELECT id, kelurahan_name as village FROM ref_kelurahan WHERE kecamatan_id=(?)`, district_id)
 	if err != nil {
 		Respon.Status = 500
 		Respon.Message = err.Error()
@@ -93,7 +93,7 @@ func GetPostalCode(village_id string) utils.Respon {
 	dbEngine := db.ConnectDB()
 
 	var Respon utils.Respon
-	getPostalCode, err := dbEngine.QueryString(`SELECT id, kodepos FROM ref_kodepos WHERE kelurahan_id=(?)`, village_id)
+	getPostalCode, err := dbEngine.QueryString(`SELECT id, kodepos as postal_code FROM ref_kodepos WHERE kelurahan_id=(?)`, village_id)
 	if err != nil {
 		Respon.Status = 500
 		Respon.Message = err.Error()

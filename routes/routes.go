@@ -47,3 +47,10 @@ func Catalog(app *fiber.App) {
 	// app.Post("/product/updateproductimage", controller.UpdateProductImage)
 	// app.Post("/product/deleteproductimage", controller.DeleteProductImage)
 }
+func Reference(app *fiber.App) {
+	app.Get("/reference/province", controller.GetProvince)
+	app.Get("/reference/city", controller.GetCity)
+	app.Get("/reference/district", controller.GetDistrict)
+	app.Get("/reference/village", controller.GetVillage)
+	app.Get("/reference/postalcode", controller.GetPostalCode)
+}
