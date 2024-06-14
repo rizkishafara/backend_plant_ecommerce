@@ -20,12 +20,12 @@ func SendForgotPassword(email,paramm string) error {
 
 func SendEmail(to, subject, body string) error {
 	m := gomail.NewMessage()
-	m.SetHeader("From", "yfather98@gmail.com")
+	m.SetHeader("From", "plantingpteam200@gmail.com")
 	m.SetHeader("To", to)
 	m.SetHeader("Subject", subject)
 	m.SetBody("text/plain", body)
 
-	d := gomail.NewDialer("sandbox.smtp.mailtrap.io", 587, "b5402b8ed3aa3c", "693c48c74b97d6")
+	d := gomail.NewDialer("sandbox.smtp.mailtrap.io", 587, "35660ba17d6714", "79c6356485bce1")
 
 	// Kirim email
 	if err := d.DialAndSend(m); err != nil {
