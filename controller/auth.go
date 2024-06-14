@@ -43,6 +43,7 @@ func Register(c *fiber.Ctx) error {
 	password := c.FormValue("password")
 	fullname := c.FormValue("fullname")
 	photo := c.FormValue("photo")
+	phone := c.FormValue("phone")
 	phototype := c.FormValue("phototype")
 
 	if !utils.IsValidEmail(email) {
@@ -81,7 +82,7 @@ func Register(c *fiber.Ctx) error {
 
 		newFileName := fmt.Sprintf("profile_%s.%s", fileID, phototype)
 
-		data := model.Register(email, password, fullname, time.Now().Format("2006-01-02"), createUUid.String(), newFileName)
+		data := model.Register(email, password, fullname, time.Now().Format("2006-01-02"), createUUid.String(), newFileName, phone)
 
 		if data.Status == 200 {
 
@@ -94,7 +95,7 @@ func Register(c *fiber.Ctx) error {
 		}
 		return c.JSON(data)
 	} else {
-		data := model.Register(email, password, fullname, time.Now().Format("2006-01-02"), createUUid.String(), "")
+		data := model.Register(email, password, fullname, time.Now().Format("2006-01-02"), createUUid.String(), "", phone)
 
 		return c.JSON(data)
 	}

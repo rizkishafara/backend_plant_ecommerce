@@ -48,9 +48,9 @@ func main() {
 	app2.Use(jwtware.New(configjwt))
 
 	routes.Home(app)
+	routes.Product(app)
 	routes.Auth(app)
 	routes.Profile(app2)
-	routes.Product(app2)
 
 	host := fmt.Sprintf(":%d", config.ServerPort)
 	log.Fatal(app.Listen(host))

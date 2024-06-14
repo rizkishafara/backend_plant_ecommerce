@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func Register(email, password, fullname, datecreate, uuid, photo string) utils.Respon {
+func Register(email, password, fullname, datecreate, uuid, photo, phone string) utils.Respon {
 	dbEngine := db.ConnectDB()
 	var Respon utils.Respon
 
@@ -30,7 +30,7 @@ func Register(email, password, fullname, datecreate, uuid, photo string) utils.R
 		Respon.Message = err.Error()
 		return Respon
 	}
-	_, err = dbEngine.QueryString("INSERT INTO users (uuid,email,PASSWORD,fullname,photo,date_create) VALUES (?,?,?,?,?,?)", uuid, email, passnew, fullname, photo, datecreate)
+	_, err = dbEngine.QueryString("INSERT INTO users (uuid,email,PASSWORD,fullname,photo,date_create,phone_number) VALUES (?,?,?,?,?,?,?)", uuid, email, passnew, fullname, photo, datecreate, phone)
 
 	if err != nil {
 		// log.Fatal(err)
