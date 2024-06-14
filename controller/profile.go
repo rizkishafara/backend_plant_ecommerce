@@ -24,7 +24,7 @@ func GetProfileUser(c *fiber.Ctx) error {
 
 	if id == "" || email == "" {
 		response.Status = 404
-		response.Message = "User tidak terdaftar"
+		response.Message = "User not registered"
 		return c.JSON(response)
 	}
 
@@ -35,7 +35,7 @@ func UpdateProfileUser(c *fiber.Ctx) error {
 
 	if id == "" {
 		response.Status = 404
-		response.Message = "User tidak terdaftar"
+		response.Message = "User not registered"
 		return c.JSON(response)
 	}
 

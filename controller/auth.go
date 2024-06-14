@@ -24,13 +24,13 @@ func Login(c *fiber.Ctx) error {
 
 	if email == "" || password == "" {
 		response.Status = 404
-		response.Message = "Email dan Password wajib diisi"
+		response.Message = "Email and Password must be filled"
 		return c.JSON(response)
 	}
 
 	if !utils.IsValidEmail(email) {
 		response.Status = 404
-		response.Message = "Email tidak valid"
+		response.Message = "Email is not valid"
 		return c.JSON(response)
 	}
 
@@ -47,13 +47,13 @@ func Register(c *fiber.Ctx) error {
 
 	if !utils.IsValidEmail(email) {
 		response.Status = 404
-		response.Message = "Email tidak valid"
+		response.Message = "Email is not valid"
 		return c.JSON(response)
 	}
 
 	if email == "" || password == "" || fullname == "" {
 		response.Status = 404
-		response.Message = "Data wajib diisi"
+		response.Message = "Email, Password and Fullname must be filled"
 		return c.JSON(response)
 	}
 
@@ -104,13 +104,13 @@ func ForgotPassword(c *fiber.Ctx) error {
 
 	if email == "" {
 		response.Status = 404
-		response.Message = "Email dan Password wajib diisi"
+		response.Message = "Email must be filled"
 		return c.JSON(response)
 	}
 
 	if !utils.IsValidEmail(email) {
 		response.Status = 404
-		response.Message = "Email tidak valid"
+		response.Message = "Email is not valid"
 		return c.JSON(response)
 	}
 	return c.JSON(model.ForgotPassword(email))

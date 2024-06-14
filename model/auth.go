@@ -21,7 +21,7 @@ func Register(email, password, fullname, datecreate, uuid, photo string) utils.R
 
 	if cekemail != nil {
 		Respon.Status = 404
-		Respon.Message = "Email sudah terdaftar"
+		Respon.Message = "Your email has been registered!"
 		return Respon
 	}
 	passnew, err := utils.HashPassword(password)
@@ -58,7 +58,7 @@ func Login(email, password string) utils.Respon {
 
 	if cekemail == nil {
 		Respon.Status = 404
-		Respon.Message = "Email tidak terdaftar"
+		Respon.Message = "Your email has not been registered!"
 		return Respon
 	}
 	errc := utils.CheckPasswordHash(password, cekemail[0]["password"])
@@ -79,7 +79,7 @@ func Login(email, password string) utils.Respon {
 
 	if datauser == nil {
 		Respon.Status = 404
-		Respon.Message = "Email atau Password salah!"
+		Respon.Message = "Email and Password not match"
 		return Respon
 	}
 
@@ -117,7 +117,7 @@ func ForgotPassword(email string) utils.Respon {
 
 	if cekemail == nil {
 		Respon.Status = 404
-		Respon.Message = "Email tidak terdaftar"
+		Respon.Message = "Email not found!"
 		return Respon
 	}
 	fmt.Println(cekemail)

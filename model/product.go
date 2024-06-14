@@ -61,14 +61,6 @@ func GetProduct(sizeData, page, search, minPrice, maxPrice, sort string, idCateg
 		stringWhere += fmt.Sprintf(" ORDER BY prod.date_created DESC")
 	}
 
-	// if sortName == "true" || sortName == "TRUE" {
-	// 	stringWhere += fmt.Sprintf(" ORDER BY prod.product_name %s", Order)
-	// } else if sortPrice == "true" || sortPrice == "TRUE" {
-	// 	stringWhere += fmt.Sprintf(" ORDER BY prod.price %s", Order)
-	// } else if sortDate == "true" || sortDate == "TRUE" {
-	// 	stringWhere += fmt.Sprintf(" ORDER BY prod.date_created %s", Order)
-	// }
-
 	//Pagination
 	if page != "" && sizeData != "" {
 		pageInt, err := strconv.Atoi(page)

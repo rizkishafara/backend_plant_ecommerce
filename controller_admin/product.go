@@ -69,7 +69,7 @@ func AddProduct(c *fiber.Ctx) error {
 
 	if name == "" || description == "" || price == "" || discount == "" || category_id == "" {
 		response.Status = 404
-		response.Message = "Data wajib diisi"
+		response.Message = "Data must be filled"
 		return c.JSON(response)
 	}
 
@@ -93,7 +93,7 @@ func UpdateProduct(c *fiber.Ctx) error {
 
 	if name == "" || description == "" || price == "" || discount == "" || category_id == "" {
 		response.Status = 404
-		response.Message = "Data wajib diisi"
+		response.Message = "Data must be filled"
 		return c.JSON(response)
 	}
 
@@ -111,7 +111,7 @@ func DeleteProduct(c *fiber.Ctx) error {
 
 	if productid == "" {
 		response.Status = 404
-		response.Message = "Data wajib diisi"
+		response.Message = "Data must be filled"
 		return c.JSON(response)
 	}
 

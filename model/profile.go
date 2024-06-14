@@ -20,7 +20,7 @@ func GetProfileUser(id, email string) utils.Respon {
 	}
 	if getProfile == nil {
 		Respon.Status = 404
-		Respon.Message = "User tidak terdaftar"
+		Respon.Message = "User not found"
 		return Respon
 	}
 	var dataResponse = make(map[string]interface{})
@@ -54,7 +54,7 @@ func UpdateProfile(fullname, photo, id, date string) utils.Respon {
 		query = "UPDATE users SET fullname = '" + fullname + ", date_update = '" + date + "' WHERE uuid = '" + id + "'"
 	} else {
 		Respon.Status = 404
-		Respon.Message = "Tidak ada yang diubah"
+		Respon.Message = "No data to update"
 		return Respon
 	}
 
