@@ -31,7 +31,7 @@ func Profile(app fiber.Router) {
 	app.Get("/profile/getcountloyalty", controller.GetCountLoyalty)
 }
 
-func Product(app *fiber.App) {
+func Catalog(app *fiber.App) {
 
 	app.Get("/product", controller.GetProduct)
 	// app.Get("/product/getproductbyid", controller.GetProductByID)

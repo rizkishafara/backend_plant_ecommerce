@@ -48,7 +48,7 @@ func main() {
 	app2.Use(jwtware.New(configjwt))
 
 	routes.Home(app)
-	routes.Product(app)
+	routes.Catalog(app)
 	routes.Auth(app)
 	routes.Profile(app2)
 
