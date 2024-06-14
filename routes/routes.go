@@ -29,9 +29,12 @@ func Profile(app fiber.Router) {
 	app.Post("/profile/updateprofile", controller.UpdateProfileUser)
 	app.Get("/profile/getcountvoucher", controller.GetCountVoucher)
 	app.Get("/profile/getcountloyalty", controller.GetCountLoyalty)
+
+	app.Post("/profile/addaddress", controller.AddAddress)
+	app.Get("/profile/getaddress", controller.GetAddress)
 }
 
-func Product(app fiber.Router) {
+func Catalog(app *fiber.App) {
 
 	app.Get("/product", controller.GetProduct)
 	// app.Get("/product/getproductbyid", controller.GetProductByID)
@@ -46,4 +49,11 @@ func Product(app fiber.Router) {
 	// app.Post("/product/addproductimage", controller.AddProductImage)
 	// app.Post("/product/updateproductimage", controller.UpdateProductImage)
 	// app.Post("/product/deleteproductimage", controller.DeleteProductImage)
+}
+func Reference(app *fiber.App) {
+	app.Get("/reference/province", controller.GetProvince)
+	app.Get("/reference/city", controller.GetCity)
+	app.Get("/reference/district", controller.GetDistrict)
+	app.Get("/reference/village", controller.GetVillage)
+	app.Get("/reference/postalcode", controller.GetPostalCode)
 }

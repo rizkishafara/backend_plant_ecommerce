@@ -8,6 +8,7 @@ import (
 )
 
 var Config = config.LoadConfig(".")
+
 func GetProfileUser(id, email string) utils.Respon {
 	dbEngine := db.ConnectDB()
 
@@ -20,7 +21,7 @@ func GetProfileUser(id, email string) utils.Respon {
 	}
 	if getProfile == nil {
 		Respon.Status = 404
-		Respon.Message = "User tidak terdaftar"
+		Respon.Message = "User not found"
 		return Respon
 	}
 	var dataResponse = make(map[string]interface{})
@@ -54,7 +55,7 @@ func UpdateProfile(fullname, photo, id, date string) utils.Respon {
 		query = "UPDATE users SET fullname = '" + fullname + ", date_update = '" + date + "' WHERE uuid = '" + id + "'"
 	} else {
 		Respon.Status = 404
-		Respon.Message = "Tidak ada yang diubah"
+		Respon.Message = "No data to update"
 		return Respon
 	}
 
@@ -118,6 +119,54 @@ func GetCountLoyalty(id string) utils.Respon {
 
 	Respon.Status = 200
 	Respon.Data = datares
+	Respon.Message = "success"
+	return Respon
+}
+func AddAddress(uuid, id_user, address, phone, province, city, district, village, postalcode, datecreate, recipent, label string) utils.Respon {
+	dbEngine := db.ConnectDB()
+	var Respon utils.Respon
+
+	_, err := dbEngine.QueryString(`INSERT INTO user_address (uuid,id_user,address,id_provinsi,id_kabkot,kode_pos,no_hp,date_create,recipient,address_label) VALUES (?,?,?,?,?,?,?,?,?,?)`, uuid, id_user, address, province, city, postalcode, phone, datecreate, recipent, label)
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	Respon.Status = 200
+	Respon.Message = "success"
+	return Respon
+}
+func GetAddress(id string) utils.Respon {
+	dbEngine := db.ConnectDB()
+	var Respon utils.Respon
+
+	getAddress, err := dbEngine.QueryString(`SELECT 
+												ua.uuid,
+												ua.address_label,
+												ua.recipient,
+												ua.no_hp as phone,
+												ua.address ,
+												prov.provinsi_name as province,
+												kab.kabkot_name as city,
+												kec.kecamatan_name as district,
+												kel.kelurahan_name as village,
+												ua.kode_pos as postal_code
+											FROM
+												user_address ua
+											LEFT JOIN ref_provinsi prov ON ua.id_provinsi = prov.id
+											LEFT JOIN ref_kabkot kab ON ua.id_kabkot = kab.id
+											LEFT JOIN ref_kecamatan kec ON ua.id_kecamatan = kec.id
+											LEFT JOIN ref_kelurahan kel ON ua.id_kelurahan = kel.id
+											WHERE ua.id_user=(?)`, id)
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	Respon.Status = 200
+	Respon.Data = getAddress
 	Respon.Message = "success"
 	return Respon
 }

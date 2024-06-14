@@ -24,13 +24,13 @@ func Login(c *fiber.Ctx) error {
 
 	if email == "" || password == "" {
 		response.Status = 404
-		response.Message = "Email dan Password wajib diisi"
+		response.Message = "Email and Password must be filled"
 		return c.JSON(response)
 	}
 
 	if !utils.IsValidEmail(email) {
 		response.Status = 404
-		response.Message = "Email tidak valid"
+		response.Message = "Email is not valid"
 		return c.JSON(response)
 	}
 
@@ -43,17 +43,18 @@ func Register(c *fiber.Ctx) error {
 	password := c.FormValue("password")
 	fullname := c.FormValue("fullname")
 	photo := c.FormValue("photo")
+	phone := c.FormValue("phone")
 	phototype := c.FormValue("phototype")
 
 	if !utils.IsValidEmail(email) {
 		response.Status = 404
-		response.Message = "Email tidak valid"
+		response.Message = "Email is not valid"
 		return c.JSON(response)
 	}
 
 	if email == "" || password == "" || fullname == "" {
 		response.Status = 404
-		response.Message = "Data wajib diisi"
+		response.Message = "Email, Password and Fullname must be filled"
 		return c.JSON(response)
 	}
 
@@ -81,7 +82,7 @@ func Register(c *fiber.Ctx) error {
 
 		newFileName := fmt.Sprintf("profile_%s.%s", fileID, phototype)
 
-		data := model.Register(email, password, fullname, time.Now().Format("2006-01-02"), createUUid.String(), newFileName)
+		data := model.Register(email, password, fullname, time.Now().Format("2006-01-02"), createUUid.String(), newFileName, phone)
 
 		if data.Status == 200 {
 
@@ -94,7 +95,7 @@ func Register(c *fiber.Ctx) error {
 		}
 		return c.JSON(data)
 	} else {
-		data := model.Register(email, password, fullname, time.Now().Format("2006-01-02"), createUUid.String(), "")
+		data := model.Register(email, password, fullname, time.Now().Format("2006-01-02"), createUUid.String(), "", phone)
 
 		return c.JSON(data)
 	}
@@ -104,13 +105,13 @@ func ForgotPassword(c *fiber.Ctx) error {
 
 	if email == "" {
 		response.Status = 404
-		response.Message = "Email dan Password wajib diisi"
+		response.Message = "Email must be filled"
 		return c.JSON(response)
 	}
 
 	if !utils.IsValidEmail(email) {
 		response.Status = 404
-		response.Message = "Email tidak valid"
+		response.Message = "Email is not valid"
 		return c.JSON(response)
 	}
 	return c.JSON(model.ForgotPassword(email))

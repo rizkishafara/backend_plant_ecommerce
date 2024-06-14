@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func Register(email, password, fullname, datecreate, uuid, photo string) utils.Respon {
+func Register(email, password, fullname, datecreate, uuid, photo, phone string) utils.Respon {
 	dbEngine := db.ConnectDB()
 	var Respon utils.Respon
 
@@ -21,7 +21,7 @@ func Register(email, password, fullname, datecreate, uuid, photo string) utils.R
 
 	if cekemail != nil {
 		Respon.Status = 404
-		Respon.Message = "Email sudah terdaftar"
+		Respon.Message = "Your email has been registered!"
 		return Respon
 	}
 	passnew, err := utils.HashPassword(password)
@@ -30,7 +30,7 @@ func Register(email, password, fullname, datecreate, uuid, photo string) utils.R
 		Respon.Message = err.Error()
 		return Respon
 	}
-	_, err = dbEngine.QueryString("INSERT INTO users (uuid,email,PASSWORD,fullname,photo,date_create) VALUES (?,?,?,?,?,?)", uuid, email, passnew, fullname, photo, datecreate)
+	_, err = dbEngine.QueryString("INSERT INTO users (uuid,email,PASSWORD,fullname,photo,date_create,phone_number) VALUES (?,?,?,?,?,?,?)", uuid, email, passnew, fullname, photo, datecreate, phone)
 
 	if err != nil {
 		// log.Fatal(err)
@@ -58,7 +58,7 @@ func Login(email, password string) utils.Respon {
 
 	if cekemail == nil {
 		Respon.Status = 404
-		Respon.Message = "Email tidak terdaftar"
+		Respon.Message = "Your email has not been registered!"
 		return Respon
 	}
 	errc := utils.CheckPasswordHash(password, cekemail[0]["password"])
@@ -79,7 +79,7 @@ func Login(email, password string) utils.Respon {
 
 	if datauser == nil {
 		Respon.Status = 404
-		Respon.Message = "Email atau Password salah!"
+		Respon.Message = "Email and Password not match"
 		return Respon
 	}
 
@@ -117,7 +117,7 @@ func ForgotPassword(email string) utils.Respon {
 
 	if cekemail == nil {
 		Respon.Status = 404
-		Respon.Message = "Email tidak terdaftar"
+		Respon.Message = "Email not found!"
 		return Respon
 	}
 	fmt.Println(cekemail)
