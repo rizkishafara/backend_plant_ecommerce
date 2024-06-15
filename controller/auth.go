@@ -46,6 +46,8 @@ func Register(c *fiber.Ctx) error {
 	phone := c.FormValue("phone")
 	phototype := c.FormValue("phototype")
 
+	fmt.Println("email masuk: ",email)
+
 	if !utils.IsValidEmail(email) {
 		response.Status = 404
 		response.Message = "Email is not valid"
