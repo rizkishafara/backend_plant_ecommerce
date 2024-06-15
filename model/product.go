@@ -147,3 +147,81 @@ func GetProduct(sizeData, page, search, minPrice, maxPrice, sort string, idCateg
 	Respon.Message = "success"
 	return Respon
 }
+func GetProductDetail(uuid string) utils.Respon {
+	var Respon utils.Respon
+
+	query := fmt.Sprintf(`SELECT 
+							prod.uuid, 
+							prod.product_name, 
+							prod.description, 
+							prod.price, 
+							prod.discount, 
+							prod.date_created, 
+							cat.category_name 
+						FROM 
+							product AS prod 
+						LEFT JOIN ref_category_product AS cat ON cat.id = prod.category_id::integer 
+						WHERE 
+							prod.uuid = '%s'`, uuid)
+
+	dbEngine := db.ConnectDB()
+
+	getproduct, err := dbEngine.QueryString(query)
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	if len(getproduct) == 0 {
+		Respon.Status = 404
+		Respon.Message = "Product not found"
+		return Respon
+	}
+
+	getSize, err := dbEngine.QueryString(`select ps.uuid,rs.size from product_size as ps 
+										left join ref_size as rs on ps.size_id::integer = rs.id 
+										where ps.product_id=?`, getproduct[0]["uuid"])
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	getImage, err := dbEngine.QueryString(`SELECT img.file_name FROM product_image AS pi
+										LEFT JOIN images AS img ON pi.image_id = img.uuid
+										WHERE pi.product_id=?`, getproduct[0]["uuid"])
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	var images []string
+
+	for i := 0; i < len(getImage); i++ {
+		images = append(images, fmt.Sprintf("%s/file/product/%s", Config.ServerHost, getImage[i]["file_name"]))
+	}
+
+
+	product := make(map[string]interface{})
+
+	intPrice, _ := strconv.Atoi(getproduct[0]["price"])
+	intDiscount, _ := strconv.Atoi(getproduct[0]["discount"])
+	intPriceDiscount := intPrice - intDiscount
+
+	product["id"] = getproduct[0]["uuid"]
+	product["images"] = images
+	product["title"] = getproduct[0]["product_name"]
+	product["price"] = intPrice
+	product["after_discount"] = intPriceDiscount
+	product["size"] = getSize
+	product["description"] = getproduct[0]["description"]
+	product["category"] = getproduct[0]["category_name"]
+	// product["date_created"] = getproduct[0]["date_created"]
+
+	Respon.Status = 200
+	Respon.Data = product
+	Respon.Message = "success"
+	return Respon
+}

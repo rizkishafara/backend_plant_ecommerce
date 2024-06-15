@@ -6,6 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 )
+
 func Home(app *fiber.App) {
 	app.Get("/home/banner", controller.GetBanner)
 	app.Get("/home/popular-category", controller.GetPopularCategory)
@@ -37,18 +38,12 @@ func Profile(app fiber.Router) {
 func Catalog(app *fiber.App) {
 
 	app.Get("/product", controller.GetProduct)
+	app.Get("/product/:uuid", controller.GetProductDetail)
 	// app.Get("/product/getproductbyid", controller.GetProductByID)
 	// app.Get("/product/getproductbycategory", controller.GetProductByCategory)
 	// app.Get("/product/getproductbysearch", controller.GetProductBySearch)
 	// app.Get("/product/getproductbycategorysearch", controller.GetProductByCategorySearch)
 
-	// FOR ADMIN ONLY
-	app.Post("/product/addproduct", controlleradmin.AddProduct)
-	app.Post("/product/updateproduct", controlleradmin.UpdateProduct)
-	app.Post("/product/deleteproduct", controlleradmin.DeleteProduct)
-	// app.Post("/product/addproductimage", controller.AddProductImage)
-	// app.Post("/product/updateproductimage", controller.UpdateProductImage)
-	// app.Post("/product/deleteproductimage", controller.DeleteProductImage)
 }
 func Reference(app *fiber.App) {
 	app.Get("/reference/province", controller.GetProvince)
@@ -56,4 +51,15 @@ func Reference(app *fiber.App) {
 	app.Get("/reference/district", controller.GetDistrict)
 	app.Get("/reference/village", controller.GetVillage)
 	app.Get("/reference/postalcode", controller.GetPostalCode)
+}
+
+// admin route
+func Admin(app fiber.Router) {
+	// produk
+	app.Post("/product/addproduct", controlleradmin.AddProduct)
+	app.Post("/product/updateproduct", controlleradmin.UpdateProduct)
+	app.Post("/product/deleteproduct", controlleradmin.DeleteProduct)
+	// app.Post("/product/addproductimage", controller.AddProductImage)
+	// app.Post("/product/updateproductimage", controller.UpdateProductImage)
+	// app.Post("/product/deleteproductimage", controller.DeleteProductImage)
 }

@@ -34,6 +34,10 @@ func main() {
 		c.Set("X-Frame-Options", "SAMEORIGIN")
 		c.Set("X-DNS-Prefetch-Control", "off")
 
+		// Set CORS headers
+		c.Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		c.Set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
+		c.Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept")
 		// Go to next middleware:
 		return c.Next()
 	})
@@ -52,6 +56,7 @@ func main() {
 	routes.Auth(app)
 	routes.Reference(app)
 	routes.Profile(app2)
+	routes.Admin(app2)
 
 	host := fmt.Sprintf(":%d", config.ServerPort)
 	log.Fatal(app.Listen(host))
