@@ -25,6 +25,9 @@ func AddProduct(c *fiber.Ctx) error {
 	discount := c.FormValue("discount")
 	category_id := c.FormValue("category_id")
 	images := c.FormValue("images")
+	sizes:= c.FormValue("size")
+
+
 
 	var img []string
 	_ = json.Unmarshal([]byte(images), &img)
@@ -64,8 +67,15 @@ func AddProduct(c *fiber.Ctx) error {
 
 		// fmt.Println(image)
 		go admin.AddProductImage(newFileName, time.Now().Format("2006-01-02"), productid)
-
 	}
+
+	var size []string
+	_ = json.Unmarshal([]byte(sizes), &size)
+	
+	for _, s := range size {
+		go admin.AddSizeProduct(s, time.Now().Format("2006-01-02"), productid)
+	}
+	
 
 	if name == "" || description == "" || price == "" || discount == "" || category_id == "" {
 		response.Status = 404

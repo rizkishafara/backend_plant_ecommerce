@@ -42,6 +42,18 @@ func AddProductImage(file_name, date, product_id string) {
 	}
 	return
 }
+func AddSizeProduct(size_id, date, product_id string) {
+	dbEngine := db.ConnectDB()
+	uuidPivot := uuid.New()
+
+	_, err := dbEngine.QueryString(`INSERT INTO product_size (uuid, size_id, product_id, date_create) VALUES (?,?,?,?)`, uuidPivot.String(), size_id, product_id, date)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	return
+}
 func UpdateProduct(uuid, name, description, price, discount, category_id, date string) (utils.Respon, error) {
 	dbEngine := db.ConnectDB()
 	var Respon utils.Respon
@@ -84,7 +96,7 @@ func DeleteAllProductImage(product_id string) (utils.Respon, error) {
 	}
 	for i := 0; i < len(getimageId); i++ {
 		getnameimage, err := dbEngine.QueryString(`SELECT file_name FROM images WHERE uuid=?`, getimageId[i]["image_id"])
-		if err == nil && len(getnameimage) > 0{
+		if err == nil && len(getnameimage) > 0 {
 			utils.DeleteFile(getnameimage[0]["file_name"], "product")
 		}
 		_, err = dbEngine.QueryString(`DELETE FROM images WHERE uuid=?`, getimageId[i]["image_id"])
@@ -94,7 +106,7 @@ func DeleteAllProductImage(product_id string) (utils.Respon, error) {
 			return Respon, err
 		}
 	}
-	
+
 	_, err = dbEngine.QueryString(`DELETE FROM product_image WHERE product_id=?`, product_id)
 	if err != nil {
 		Respon.Status = 500

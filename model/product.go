@@ -147,3 +147,52 @@ func GetProduct(sizeData, page, search, minPrice, maxPrice, sort string, idCateg
 	Respon.Message = "success"
 	return Respon
 }
+func GetProductByID(id string) utils.Respon {
+	var Respon utils.Respon
+
+	query := fmt.Sprintf(`SELECT 
+							prod.uuid, 
+							prod.product_name, 
+							prod.description, 
+							prod.price, 
+							prod.discount, 
+							prod.date_created, 
+							cat.category_name 
+						FROM 
+							product AS prod 
+						LEFT JOIN ref_category_product AS cat ON cat.id = prod.category_id::integer
+						WHERE prod.uuid = '%s'`, id)
+
+	dbEngine := db.ConnectDB()
+
+	getproduct, err := dbEngine.QueryString(query)
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	arrayproduct := make([]interface{}, 0, len(getproduct))
+	for i := 0; i < len(getproduct); i++ {
+		product := make(map[string]interface{})
+
+		intPrice, _ := strconv.Atoi(getproduct[i]["price"])
+		intDiscount, _ := strconv.Atoi(getproduct[i]["discount"])
+		intPriceDiscount := intPrice - intDiscount
+
+		product["id"] = getproduct[i]["uuid"]
+		product["title"] = getproduct[i]["product_name"]
+		product["description"] = getproduct[i]["description"]
+		product["price"] = intPrice
+		product["price_discount"] = intPriceDiscount
+		product["category"] = getproduct[i]["category_name"]
+		arrayproduct = append(arrayproduct, product)
+	}
+	respData := make(map[string]interface{})
+
+	respData["product"] = arrayproduct
+	Respon.Status = 200
+	Respon.Data = respData
+	Respon.Message = "success"
+	return Respon
+}
