@@ -38,6 +38,7 @@ func Profile(app fiber.Router) {
 func Catalog(app *fiber.App) {
 
 	app.Get("/product", controller.GetProduct)
+	app.Get("/product/:uuid", controller.GetProductDetail)
 	// app.Get("/product/getproductbyid", controller.GetProductByID)
 	// app.Get("/product/getproductbycategory", controller.GetProductByCategory)
 	// app.Get("/product/getproductbysearch", controller.GetProductBySearch)

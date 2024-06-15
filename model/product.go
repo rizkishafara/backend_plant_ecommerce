@@ -147,7 +147,7 @@ func GetProduct(sizeData, page, search, minPrice, maxPrice, sort string, idCateg
 	Respon.Message = "success"
 	return Respon
 }
-func GetProductByID(id string) utils.Respon {
+func GetProductDetail(uuid string) utils.Respon {
 	var Respon utils.Respon
 
 	query := fmt.Sprintf(`SELECT 
@@ -160,8 +160,9 @@ func GetProductByID(id string) utils.Respon {
 							cat.category_name 
 						FROM 
 							product AS prod 
-						LEFT JOIN ref_category_product AS cat ON cat.id = prod.category_id::integer
-						WHERE prod.uuid = '%s'`, id)
+						LEFT JOIN ref_category_product AS cat ON cat.id = prod.category_id::integer 
+						WHERE 
+							prod.uuid = '%s'`, uuid)
 
 	dbEngine := db.ConnectDB()
 
@@ -172,27 +173,55 @@ func GetProductByID(id string) utils.Respon {
 		return Respon
 	}
 
-	arrayproduct := make([]interface{}, 0, len(getproduct))
-	for i := 0; i < len(getproduct); i++ {
-		product := make(map[string]interface{})
-
-		intPrice, _ := strconv.Atoi(getproduct[i]["price"])
-		intDiscount, _ := strconv.Atoi(getproduct[i]["discount"])
-		intPriceDiscount := intPrice - intDiscount
-
-		product["id"] = getproduct[i]["uuid"]
-		product["title"] = getproduct[i]["product_name"]
-		product["description"] = getproduct[i]["description"]
-		product["price"] = intPrice
-		product["price_discount"] = intPriceDiscount
-		product["category"] = getproduct[i]["category_name"]
-		arrayproduct = append(arrayproduct, product)
+	if len(getproduct) == 0 {
+		Respon.Status = 404
+		Respon.Message = "Product not found"
+		return Respon
 	}
-	respData := make(map[string]interface{})
 
-	respData["product"] = arrayproduct
+	getSize, err := dbEngine.QueryString(`select ps.uuid,rs.size from product_size as ps 
+										left join ref_size as rs on ps.size_id::integer = rs.id 
+										where ps.product_id=?`, getproduct[0]["uuid"])
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	getImage, err := dbEngine.QueryString(`SELECT img.file_name FROM product_image AS pi
+										LEFT JOIN images AS img ON pi.image_id = img.uuid
+										WHERE pi.product_id=?`, getproduct[0]["uuid"])
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	var images []string
+
+	for i := 0; i < len(getImage); i++ {
+		images = append(images, fmt.Sprintf("%s/file/product/%s", Config.ServerHost, getImage[i]["file_name"]))
+	}
+
+
+	product := make(map[string]interface{})
+
+	intPrice, _ := strconv.Atoi(getproduct[0]["price"])
+	intDiscount, _ := strconv.Atoi(getproduct[0]["discount"])
+	intPriceDiscount := intPrice - intDiscount
+
+	product["id"] = getproduct[0]["uuid"]
+	product["images"] = images
+	product["title"] = getproduct[0]["product_name"]
+	product["price"] = intPrice
+	product["after_discount"] = intPriceDiscount
+	product["size"] = getSize
+	product["description"] = getproduct[0]["description"]
+	product["category"] = getproduct[0]["category_name"]
+	// product["date_created"] = getproduct[0]["date_created"]
+
 	Respon.Status = 200
-	Respon.Data = respData
+	Respon.Data = product
 	Respon.Message = "success"
 	return Respon
 }
