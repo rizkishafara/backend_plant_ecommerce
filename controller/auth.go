@@ -50,7 +50,7 @@ func Register(c *fiber.Ctx) error {
 
 	if !utils.IsValidEmail(email) {
 		response.Status = 404
-		response.Message = "Email is not valid"
+		response.Message = email + ", is not valid email"
 		return c.JSON(response)
 	}
 
