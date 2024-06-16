@@ -32,6 +32,8 @@ func Profile(app fiber.Router) {
 	app.Get("/profile/getcountloyalty", controller.GetCountLoyalty)
 
 	app.Post("/profile/addaddress", controller.AddAddress)
+	app.Post("/profile/updateaddress", controller.UpdateAddress)
+	app.Post("/profile/deleteaddress", controller.DeleteAddress)
 	app.Get("/profile/getaddress", controller.GetAddress)
 }
 

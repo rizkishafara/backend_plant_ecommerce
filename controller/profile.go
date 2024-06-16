@@ -144,3 +144,36 @@ func AddAddress(c *fiber.Ctx) error {
 
 	return c.JSON(model.AddAddress(uuid.New().String(), id, address, phone, province, city, district, village, postalCode, time.Now().Format("2006-01-02"), recipient, primary))
 }
+func UpdateAddress(c *fiber.Ctx) error {
+
+	address := c.FormValue("address")
+	province := c.FormValue("province_id")
+	city := c.FormValue("city_id")
+	district := c.FormValue("district_id")
+	village := c.FormValue("vilage_id")
+	postalCode := c.FormValue("postal_code")
+	phone := c.FormValue("phone")
+	label := c.FormValue("label")
+	recipient := c.FormValue("recipient")
+	address_id := c.FormValue("address_id")
+
+	if address == "" || province == "" || city == "" || district == "" || village == "" || postalCode == "" || phone == "" || label == "" || recipient == "" || address_id == "" {
+		response.Status = 404
+		response.Message = "All field must be filled"
+		return c.JSON(response)
+	}
+
+	return c.JSON(model.UpdateAddress(address_id, address, phone, province, city, district, village, postalCode, time.Now().Format("2006-01-02"), recipient, label))
+}
+func DeleteAddress(c *fiber.Ctx) error {
+
+	address_id := c.FormValue("address_id")
+
+	if address_id == "" {
+		response.Status = 404
+		response.Message = "All field must be filled"
+		return c.JSON(response)
+	}
+
+	return c.JSON(model.DeleteAddress(address_id))
+}

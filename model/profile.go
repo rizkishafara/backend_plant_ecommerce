@@ -137,6 +137,36 @@ func AddAddress(uuid, id_user, address, phone, province, city, district, village
 	Respon.Message = "success"
 	return Respon
 }
+func UpdateAddress(uuid, address, phone, province, city, district, village, postalcode, dateupdate, recipent, label string) utils.Respon {
+	dbEngine := db.ConnectDB()
+	var Respon utils.Respon
+
+	_, err := dbEngine.QueryString(`UPDATE user_address SET address=?,id_provinsi=?,id_kabkot=?,kode_pos=?,no_hp=?,date_update=?,recipient=?,address_label=? WHERE uuid=?`, address, province, city, postalcode, phone, dateupdate, recipent, label, uuid)
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	Respon.Status = 200
+	Respon.Message = "success"
+	return Respon
+}
+func DeleteAddress(uuid string) utils.Respon {
+	dbEngine := db.ConnectDB()
+	var Respon utils.Respon
+
+	_, err := dbEngine.QueryString(`DELETE FROM user_address WHERE uuid=?`, uuid)
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	Respon.Status = 200
+	Respon.Message = "success"
+	return Respon
+}
 func GetAddress(id string) utils.Respon {
 	dbEngine := db.ConnectDB()
 	var Respon utils.Respon
