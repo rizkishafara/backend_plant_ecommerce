@@ -25,9 +25,7 @@ func AddProduct(c *fiber.Ctx) error {
 	discount := c.FormValue("discount")
 	category_id := c.FormValue("category_id")
 	images := c.FormValue("images")
-	sizes:= c.FormValue("size")
-
-
+	sizes := c.FormValue("size")
 
 	var img []string
 	_ = json.Unmarshal([]byte(images), &img)
@@ -41,11 +39,7 @@ func AddProduct(c *fiber.Ctx) error {
 			return c.JSON(response)
 		}
 		fileType := http.DetectContentType(fileBytes)
-		allowedTypes := map[string]bool{
-			"image/jpg":  true,
-			"image/jpeg": true,
-		}
-		if !allowedTypes[fileType] {
+		if !utils.AllowedTypes[fileType] {
 			response.Status = 500
 			response.Message = "Unsupported file type"
 			return c.JSON(response)
@@ -71,11 +65,10 @@ func AddProduct(c *fiber.Ctx) error {
 
 	var size []string
 	_ = json.Unmarshal([]byte(sizes), &size)
-	
+
 	for _, s := range size {
 		go admin.AddSizeProduct(s, time.Now().Format("2006-01-02"), productid)
 	}
-	
 
 	if name == "" || description == "" || price == "" || discount == "" || category_id == "" {
 		response.Status = 404

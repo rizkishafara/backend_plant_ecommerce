@@ -44,11 +44,7 @@ func UpdateProfileUser(c *fiber.Ctx) error {
 	phototype := c.FormValue("phototype")
 
 	if photo != "" {
-		allowedTypes := map[string]bool{
-			"jpg":  true,
-			"jpeg": true,
-		}
-		if !allowedTypes[phototype] {
+		if !utils.AllowedTypes[phototype] {
 			response.Status = 500
 			response.Message = "Unsupported file type"
 			return c.JSON(response)
@@ -121,7 +117,7 @@ func GetAddress(c *fiber.Ctx) error {
 	return c.JSON(model.GetAddress(id))
 }
 func AddAddress(c *fiber.Ctx) error {
-	
+
 	id := utils.GetValJWT(c.Locals("user").(*jwt.Token), "idreq")
 
 	if id == "" {

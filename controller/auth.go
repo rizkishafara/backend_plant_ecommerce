@@ -50,7 +50,7 @@ func Register(c *fiber.Ctx) error {
 
 	if !utils.IsValidEmail(email) {
 		response.Status = 404
-		response.Message = "Email is not valid"
+		response.Message = email + ", is not valid email"
 		return c.JSON(response)
 	}
 
@@ -62,11 +62,7 @@ func Register(c *fiber.Ctx) error {
 
 	createUUid := uuid.New()
 	if photo != "" {
-		allowedTypes := map[string]bool{
-			"jpg":  true,
-			"jpeg": true,
-		}
-		if !allowedTypes[phototype] {
+		if !utils.AllowedTypes[phototype] {
 			response.Status = 500
 			response.Message = "Unsupported file type"
 			return c.JSON(response)

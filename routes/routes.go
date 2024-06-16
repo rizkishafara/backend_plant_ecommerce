@@ -38,7 +38,10 @@ func Profile(app fiber.Router) {
 func Catalog(app *fiber.App) {
 
 	app.Get("/product", controller.GetProduct)
+	app.Get("/product/category", controller.GetProductCategory)
+	app.Get("/product/size", controller.GetProductSize)
 	app.Get("/product/:uuid", controller.GetProductDetail)
+	app.Get("/product/review", controller.GetProductReview)
 	// app.Get("/product/getproductbyid", controller.GetProductByID)
 	// app.Get("/product/getproductbycategory", controller.GetProductByCategory)
 	// app.Get("/product/getproductbysearch", controller.GetProductBySearch)
@@ -62,4 +65,7 @@ func Admin(app fiber.Router) {
 	// app.Post("/product/addproductimage", controller.AddProductImage)
 	// app.Post("/product/updateproductimage", controller.UpdateProductImage)
 	// app.Post("/product/deleteproductimage", controller.DeleteProductImage)
+
+	// referensi
+	app.Post("/reference/addcategoryproduct", controlleradmin.AddCategoryProduct)
 }
