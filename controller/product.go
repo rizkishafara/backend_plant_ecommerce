@@ -56,7 +56,7 @@ func GetProductSize(c *fiber.Ctx) error {
 	return c.JSON(model.GetProductSize())
 }
 func GetProductDetail(c *fiber.Ctx) error {
-	uuid := c.Params("uuid")
+	uuid := c.Query("id")
 	if uuid == "" {
 		response.Status = 404
 		response.Message = "UUID is required"
