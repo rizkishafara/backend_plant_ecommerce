@@ -48,6 +48,13 @@ func Catalog(app *fiber.App) {
 	// app.Get("/product/getproductbycategorysearch", controller.GetProductByCategorySearch)
 
 }
+
+func Cart(app fiber.Router) {
+	app.Post("/cart/addtocart", controller.AddToCart)
+	app.Post("/cart/updatecart", controller.UpdateCart)
+	app.Post("/cart/deletecart", controller.DeleteCart)
+	// app.Get("/cart/getcart", controller.GetCart)
+}
 func Reference(app *fiber.App) {
 	app.Get("/reference/province", controller.GetProvince)
 	app.Get("/reference/city", controller.GetCity)

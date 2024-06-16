@@ -56,6 +56,7 @@ func main() {
 	routes.Auth(app)
 	routes.Reference(app)
 	routes.Profile(app2)
+	routes.Cart(app2)
 	routes.Admin(app2)
 
 	host := fmt.Sprintf(":%d", config.ServerPort)
