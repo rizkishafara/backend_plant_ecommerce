@@ -24,7 +24,7 @@ func GetProfileUser(c *fiber.Ctx) error {
 
 	if id == "" || email == "" {
 		response.Status = 404
-		response.Message = "User tidak terdaftar"
+		response.Message = "User not registered"
 		return c.JSON(response)
 	}
 
@@ -35,7 +35,7 @@ func UpdateProfileUser(c *fiber.Ctx) error {
 
 	if id == "" {
 		response.Status = 404
-		response.Message = "User tidak terdaftar"
+		response.Message = "User not registered"
 		return c.JSON(response)
 	}
 
@@ -44,11 +44,7 @@ func UpdateProfileUser(c *fiber.Ctx) error {
 	phototype := c.FormValue("phototype")
 
 	if photo != "" {
-		allowedTypes := map[string]bool{
-			"jpg":  true,
-			"jpeg": true,
-		}
-		if !allowedTypes[phototype] {
+		if !utils.AllowedTypes[phototype] {
 			response.Status = 500
 			response.Message = "Unsupported file type"
 			return c.JSON(response)
@@ -107,4 +103,44 @@ func GetCountLoyalty(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(model.GetCountLoyalty(id))
+}
+func GetAddress(c *fiber.Ctx) error {
+
+	id := utils.GetValJWT(c.Locals("user").(*jwt.Token), "idreq")
+
+	if id == "" {
+		response.Status = 404
+		response.Message = "User not registered"
+		return c.JSON(response)
+	}
+
+	return c.JSON(model.GetAddress(id))
+}
+func AddAddress(c *fiber.Ctx) error {
+
+	id := utils.GetValJWT(c.Locals("user").(*jwt.Token), "idreq")
+
+	if id == "" {
+		response.Status = 404
+		response.Message = "User not registered"
+		return c.JSON(response)
+	}
+
+	address := c.FormValue("address")
+	province := c.FormValue("province_id")
+	city := c.FormValue("city_id")
+	district := c.FormValue("district_id")
+	village := c.FormValue("vilage_id")
+	postalCode := c.FormValue("postal_code")
+	phone := c.FormValue("phone")
+	primary := c.FormValue("label")
+	recipient := c.FormValue("recipient")
+
+	if address == "" || province == "" || city == "" || district == "" || village == "" || postalCode == "" || phone == "" || primary == "" || recipient == "" {
+		response.Status = 404
+		response.Message = "All field must be filled"
+		return c.JSON(response)
+	}
+
+	return c.JSON(model.AddAddress(uuid.New().String(), id, address, phone, province, city, district, village, postalCode, time.Now().Format("2006-01-02"), recipient, primary))
 }
