@@ -9,6 +9,12 @@ import (
 	"strings"
 )
 
+var AllowedTypes = map[string]bool{
+	"image/png":  true,
+	"image/jpg":  true,
+	"image/jpeg": true,
+}
+
 func GetFileTypeFromBase64Header(header string) (string, error) {
 	switch {
 	case strings.Contains(header, "image/jpeg"):
@@ -42,7 +48,7 @@ func SaveFile(newFileName, fileType, jenis string, file []byte) (string, error) 
 
 func DeleteFile(filename, jenis string) error {
 	path := fmt.Sprintf("%s/%s", jenis, filename)
-	
+
 	err := os.Remove("./uploads/" + path)
 	if err != nil {
 		log.Fatal(err)

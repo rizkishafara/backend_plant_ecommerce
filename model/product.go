@@ -203,7 +203,6 @@ func GetProductDetail(uuid string) utils.Respon {
 		images = append(images, fmt.Sprintf("%s/file/product/%s", Config.ServerHost, getImage[i]["file_name"]))
 	}
 
-
 	product := make(map[string]interface{})
 
 	intPrice, _ := strconv.Atoi(getproduct[0]["price"])
@@ -222,6 +221,86 @@ func GetProductDetail(uuid string) utils.Respon {
 
 	Respon.Status = 200
 	Respon.Data = product
+	Respon.Message = "success"
+	return Respon
+}
+func GetProductReview(product_id string) utils.Respon {
+	var Respon utils.Respon
+
+	query := fmt.Sprintf(`SELECT usr.fullname, usr.photo, rvw.comment
+						FROM product_review AS rvw
+						LEFT JOIN order_detail AS od ON rvw.order_id=od.uuid
+						LEFT JOIN product AS prod ON od.product_id=prod.uuid
+						LEFT JOIN trans_order AS trans ON od.trans_order_id=trans.uuid
+						LEFT JOIN users AS usr ON trans.user_id=usr.uuid
+						WHERE prod.uuid='%s'
+						ORDER BY rvw.date_create DESC`, product_id)
+
+	dbEngine := db.ConnectDB()
+
+	getReview, err := dbEngine.QueryString(query)
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+	if len(getReview) == 0 {
+		Respon.Status = 404
+		Respon.Message = "Review not found"
+		return Respon
+	}
+
+	Respon.Status = 200
+	Respon.Data = getReview
+	Respon.Message = "success"
+	return Respon
+}
+func GetProductCategory() utils.Respon {
+	var Respon utils.Respon
+
+	query := `SELECT ref_category_product.id,ref_category_product.category_name,ref_category_product.description,images.file_name FROM ref_category_product LEFT JOIN images ON images.uuid=ref_category_product.image_id ORDER BY ref_category_product.category_name ASC`
+
+	dbEngine := db.ConnectDB()
+
+	getCategory, err := dbEngine.QueryString(query)
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	arraycategory := make([]interface{}, 0, len(getCategory))
+	for i := 0; i < len(getCategory); i++ {
+		category := make(map[string]interface{})
+
+		category["id"] = getCategory[i]["id"]
+		category["category_name"] = getCategory[i]["category_name"]
+		category["description"] = getCategory[i]["description"]
+		category["image"] = fmt.Sprintf("%s/file/category/%s", Config.ServerHost, getCategory[i]["file_name"])
+		arraycategory = append(arraycategory, category)
+	}
+
+	Respon.Status = 200
+	Respon.Data = arraycategory
+	Respon.Message = "success"
+	return Respon
+}
+func GetProductSize() utils.Respon {
+	var Respon utils.Respon
+
+	query := `SELECT id,size FROM ref_size ORDER BY size DESC`
+
+	dbEngine := db.ConnectDB()
+
+	getSize, err := dbEngine.QueryString(query)
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	Respon.Status = 200
+	Respon.Data = getSize
 	Respon.Message = "success"
 	return Respon
 }

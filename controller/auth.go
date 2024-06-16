@@ -62,11 +62,7 @@ func Register(c *fiber.Ctx) error {
 
 	createUUid := uuid.New()
 	if photo != "" {
-		allowedTypes := map[string]bool{
-			"jpg":  true,
-			"jpeg": true,
-		}
-		if !allowedTypes[phototype] {
+		if !utils.AllowedTypes[phototype] {
 			response.Status = 500
 			response.Message = "Unsupported file type"
 			return c.JSON(response)

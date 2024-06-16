@@ -49,6 +49,12 @@ func GetProduct(c *fiber.Ctx) error {
 	product := model.GetProduct(sizeData, page, search, minPrice, maxPrice, sort, arrayCategory, arraySize)
 	return c.JSON(product)
 }
+func GetProductCategory(c *fiber.Ctx) error {
+	return c.JSON(model.GetProductCategory())
+}
+func GetProductSize(c *fiber.Ctx) error {
+	return c.JSON(model.GetProductSize())
+}
 func GetProductDetail(c *fiber.Ctx) error {
 	uuid := c.Params("uuid")
 	if uuid == "" {
@@ -57,4 +63,13 @@ func GetProductDetail(c *fiber.Ctx) error {
 		return c.JSON(response)
 	}
 	return c.JSON(model.GetProductDetail(uuid))
+}
+func GetProductReview(c *fiber.Ctx) error {
+	uuid := c.Query("id")
+	if uuid == "" {
+		response.Status = 404
+		response.Message = "Product ID is required"
+		return c.JSON(response)
+	}
+	return c.JSON(model.GetProductReview(uuid))
 }
