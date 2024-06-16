@@ -42,7 +42,7 @@ func Catalog(app *fiber.App) {
 	app.Get("/product", controller.GetProduct)
 	app.Get("/product/category", controller.GetProductCategory)
 	app.Get("/product/size", controller.GetProductSize)
-	app.Get("/product/:uuid", controller.GetProductDetail)
+	app.Get("/product/detail", controller.GetProductDetail)
 	app.Get("/product/review", controller.GetProductReview)
 	// app.Get("/product/getproductbyid", controller.GetProductByID)
 	// app.Get("/product/getproductbycategory", controller.GetProductByCategory)
