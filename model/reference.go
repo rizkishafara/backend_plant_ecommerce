@@ -126,13 +126,18 @@ func GetShipping() utils.Respon {
 		Respon.Message = "Shipping not found"
 		return Respon
 	}
-	var shipping map[string]interface{}
+	shipping :=make([]interface{}, 0, len(getShipping))
+	for i := 0; i < len(getShipping); i++ {
+		ship := make(map[string]interface{})
 
-	shipping["id"] = getShipping[0]["id"]
-	shipping["shipping"] = getShipping[0]["shipping"]
-	// shipping["image"] = getShipping[0]["image"]
-	shipping["logo"] = fmt.Sprintf("%s/file/assets/%s", Config.ServerHost, getShipping[0]["image"])
-	shipping["estimated"] = getShipping[0]["estimated"]
+		ship["id"] = getShipping[i]["id"]
+		ship["shipping"] = getShipping[i]["shipping"]
+		ship["logo"] = fmt.Sprintf("%s/file/assets/%s", Config.ServerHost, getShipping[i]["image"])
+		ship["estimated"] = getShipping[i]["estimated"]
+		shipping = append(shipping, ship)
+	
+	}
+
 
 	Respon.Status = 200
 	Respon.Data = shipping
