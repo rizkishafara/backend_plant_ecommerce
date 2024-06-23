@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"tanaman/db"
 	"tanaman/utils"
 )
@@ -107,6 +108,34 @@ func GetPostalCode(village_id string) utils.Respon {
 
 	Respon.Status = 200
 	Respon.Data = getPostalCode
+	Respon.Message = "success"
+	return Respon
+}
+func GetShipping() utils.Respon {
+	dbEngine := db.ConnectDB()
+
+	var Respon utils.Respon
+	getShipping, err := dbEngine.QueryString(`SELECT id, shipping_name as shipping, image, estimated FROM ref_shipping`)
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+	if getShipping == nil {
+		Respon.Status = 404
+		Respon.Message = "Shipping not found"
+		return Respon
+	}
+	var shipping map[string]interface{}
+
+	shipping["id"] = getShipping[0]["id"]
+	shipping["shipping"] = getShipping[0]["shipping"]
+	// shipping["image"] = getShipping[0]["image"]
+	shipping["logo"] = fmt.Sprintf("%s/file/shipping/%s", Config.ServerHost, getShipping[0]["image"])
+	shipping["estimated"] = getShipping[0]["estimated"]
+
+	Respon.Status = 200
+	Respon.Data = shipping
 	Respon.Message = "success"
 	return Respon
 }

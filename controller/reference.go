@@ -26,3 +26,6 @@ func GetPostalCode(c *fiber.Ctx) error {
 	village_id := c.Query("village_id")
 	return c.JSON(model.GetPostalCode(village_id))
 }
+func GetShipping(c *fiber.Ctx) error {
+	return c.JSON(model.GetShipping())
+}
