@@ -65,6 +65,7 @@ func Reference(app *fiber.App) {
 	app.Get("/reference/village", controller.GetVillage)
 	app.Get("/reference/postalcode", controller.GetPostalCode)
 	app.Get("/reference/shipping", controller.GetShipping)
+	app.Get("/reference/payment", controller.GetPayment)
 }
 
 // admin route

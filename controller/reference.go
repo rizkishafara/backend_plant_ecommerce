@@ -29,3 +29,6 @@ func GetPostalCode(c *fiber.Ctx) error {
 func GetShipping(c *fiber.Ctx) error {
 	return c.JSON(model.GetShipping())
 }
+func GetPayment(c *fiber.Ctx) error {
+	return c.JSON(model.GetPayment())
+}
