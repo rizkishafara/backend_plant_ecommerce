@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"strconv"
 	"tanaman/db"
 	"tanaman/utils"
 )
@@ -65,5 +66,56 @@ func DeleteCart(chart_id string) utils.Respon {
 	}
 	Respon.Status = 200
 	Respon.Message = "success"
+	return Respon
+}
+func GetCart(user_id string) utils.Respon {
+	dbEngine := db.ConnectDB()
+	var Respon utils.Respon
+
+	result, err := dbEngine.QueryString(`WITH MinImage AS (
+						SELECT 
+							pi.product_id AS prodid, 
+							MIN(img.id) AS min_image_id 
+						FROM 
+							images AS img 
+							INNER JOIN product_image AS PI ON img.uuid = pi.image_id 
+						GROUP BY 
+							pi.product_id
+						) 
+							SELECT prod.uuid,prod.product_name title,img.file_name,prod.price,prod.discount,tc.quantity,size.size,tc.uuid AS cart_id
+						FROM trans_cart AS tc
+						LEFT JOIN product AS prod ON prod.uuid = tc.product_id
+						LEFT JOIN MinImage AS mi ON mi.prodid = prod.uuid
+						LEFT JOIN images AS img ON img.id = mi.min_image_id
+						LEFT JOIN ref_category_product AS cat ON cat.id = prod.category_id::integer
+						LEFT JOIN ref_size AS size ON size.id = tc.size_id::integer
+						WHERE tc.user_id = ?`, user_id)
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	arrayproduct := make([]interface{}, 0, len(result))
+	for i := 0; i < len(result); i++ {
+		intPrice, _ := strconv.Atoi(result[i]["price"])
+		intDiscount, _ := strconv.Atoi(result[i]["discount"])
+		intPriceDiscount := intPrice - intDiscount
+
+		product := make(map[string]interface{})
+		product["product_id"] = result[i]["uuid"]
+		product["cart_id"] = result[i]["cart_id"]
+		product["title"] = result[i]["product_name"]
+		product["image"] = fmt.Sprintf("%s/file/product/%s", Config.ServerHost, result[i]["file_name"])
+		product["price"] = intPrice
+		product["price_discount"] = intPriceDiscount
+		product["quantity"] = result[i]["quantity"]
+		product["size"] = result[i]["size"]
+		arrayproduct = append(arrayproduct, product)
+	}
+
+	Respon.Status = 200
+	Respon.Message = "success"
+	Respon.Data = arrayproduct
 	return Respon
 }

@@ -14,7 +14,7 @@ func GetProduct(sizeData, page, search, minPrice, maxPrice, sort string, idCateg
 
 	//Search
 	if search != "" {
-		stringWhere += fmt.Sprintf(" AND (prod.product_name LIKE '%%%s%%' OR prod.description LIKE '%%%s%%' OR cat.category_name LIKE '%%%s%%')", search, search, search)
+		stringWhere += fmt.Sprintf(" AND (LOWER(prod.product_name) LIKE LOWER('%%%s%%') OR LOWER(prod.description) LIKE LOWER('%%%s%%') OR LOWER(cat.category_name) LIKE LOWER('%%%s%%'))", search, search, search)
 	}
 
 	//Filter Category

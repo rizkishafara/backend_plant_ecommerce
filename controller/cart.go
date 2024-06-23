@@ -49,3 +49,8 @@ func DeleteCart(c *fiber.Ctx) error {
 
 	return c.JSON(model.DeleteCart(id))
 }
+func GetCart(c *fiber.Ctx) error {
+	user_id := utils.GetValJWT(c.Locals("user").(*jwt.Token), "idreq")
+
+	return c.JSON(model.GetCart(user_id))
+}
