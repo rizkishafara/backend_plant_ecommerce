@@ -25,7 +25,6 @@ func GetProduct(c *fiber.Ctx) error {
 	}
 
 	var arrayCategory []int
-	var arraySize []int
 
 	if idCategory != "" {
 		err := json.Unmarshal([]byte(idCategory), &arrayCategory)
@@ -36,17 +35,8 @@ func GetProduct(c *fiber.Ctx) error {
 			return c.JSON(response)
 		}
 	}
-	if idSize != "" {
-		err := json.Unmarshal([]byte(idSize), &arraySize)
-		if err != nil {
-			fmt.Println("Error unmarshalling JSON:", err)
-			response.Status = 500
-			response.Message = "Error unmarshalling JSON Size:" + err.Error()
-			return c.JSON(response)
-		}
-	}
 
-	product := model.GetProduct(sizeData, page, search, minPrice, maxPrice, sort, arrayCategory, arraySize)
+	product := model.GetProduct(sizeData, page, search, minPrice, maxPrice, sort, arrayCategory, idSize)
 	return c.JSON(product)
 }
 func GetProductCategory(c *fiber.Ctx) error {

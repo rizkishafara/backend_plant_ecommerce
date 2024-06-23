@@ -3,18 +3,19 @@ package model
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"tanaman/db"
 	"tanaman/utils"
 )
 
-func GetProduct(sizeData, page, search, minPrice, maxPrice, sort string, idCategory, idSize []int) utils.Respon {
+func GetProduct(sizeData, page, search, minPrice, maxPrice, sort string, idCategory []int, idSize string) utils.Respon {
 	var Respon utils.Respon
 
 	stringWhere := "WHERE prod.uuid != ''"
 
 	//Search
 	if search != "" {
-		stringWhere += fmt.Sprintf(" AND (LOWER(prod.product_name) LIKE LOWER('%%%s%%') OR LOWER(prod.description) LIKE LOWER('%%%s%%') OR LOWER(cat.category_name) LIKE LOWER('%%%s%%'))", search, search, search)
+		stringWhere += fmt.Sprintf(" AND (prod.product_name ILIKE '%%%s%%' OR prod.description ILIKE '%%%s%%' OR cat.category_name ILIKE '%%%s%%')", search, search, search)
 	}
 
 	//Filter Category
@@ -27,12 +28,14 @@ func GetProduct(sizeData, page, search, minPrice, maxPrice, sort string, idCateg
 	}
 
 	//Filter Size
-	// if len(idSize) != 0 {
-	// 	stringWhere += fmt.Sprintf("AND prod.size_id LIKE (%s)", idSize[0])
-	// 	for i := 1; i < len(idSize); i++ {
-	// 		stringWhere += fmt.Sprintf(" OR prod.size_id LIKE (%s)", idSize[i])
-	// 	}
-	// }
+	if len(idSize) != 0 {
+
+		idSize = strings.Replace(idSize, "[", "", -1)
+		idSize = strings.Replace(idSize, "]", "", -1)
+
+		stringWhere += fmt.Sprintf(" AND size.id IN (%s)", idSize)
+
+	}
 
 	//Filter Price
 	if minPrice != "" || maxPrice != "" {
@@ -45,23 +48,25 @@ func GetProduct(sizeData, page, search, minPrice, maxPrice, sort string, idCateg
 	}
 
 	//Sort
+	var stringSort string
 	if sort == "a-z" {
-		stringWhere += fmt.Sprintf(" ORDER BY prod.product_name ASC")
+		stringSort += fmt.Sprintf(" ORDER BY prod.product_name ASC")
 	} else if sort == "z-a" {
-		stringWhere += fmt.Sprintf(" ORDER BY prod.product_name DESC")
+		stringSort += fmt.Sprintf(" ORDER BY prod.product_name DESC")
 	} else if sort == "low-expensive" {
-		stringWhere += fmt.Sprintf(" ORDER BY prod.price ASC")
+		stringSort += fmt.Sprintf(" ORDER BY prod.price ASC")
 	} else if sort == "expensive-low" {
-		stringWhere += fmt.Sprintf(" ORDER BY prod.price DESC")
+		stringSort += fmt.Sprintf(" ORDER BY prod.price DESC")
 	} else if sort == "newest" {
-		stringWhere += fmt.Sprintf(" ORDER BY prod.date_created DESC")
+		stringSort += fmt.Sprintf(" ORDER BY prod.date_created DESC")
 	} else if sort == "oldest" {
-		stringWhere += fmt.Sprintf(" ORDER BY prod.date_created ASC")
+		stringSort += fmt.Sprintf(" ORDER BY prod.date_created ASC")
 	} else {
-		stringWhere += fmt.Sprintf(" ORDER BY prod.date_created DESC")
+		stringSort += fmt.Sprintf(" ORDER BY prod.date_created DESC")
 	}
 
 	//Pagination
+	var stringLimit string
 	if page != "" && sizeData != "" {
 		pageInt, err := strconv.Atoi(page)
 		if err != nil {
@@ -77,7 +82,7 @@ func GetProduct(sizeData, page, search, minPrice, maxPrice, sort string, idCateg
 		}
 
 		offset := (pageInt - 1) * sizeInt
-		stringWhere += fmt.Sprintf(" LIMIT %d OFFSET %d", sizeInt, offset)
+		stringLimit += fmt.Sprintf(" LIMIT %d OFFSET %d", sizeInt, offset)
 	}
 
 	query := fmt.Sprintf(`WITH MinImage AS (
@@ -97,18 +102,35 @@ func GetProduct(sizeData, page, search, minPrice, maxPrice, sort string, idCateg
 							prod.price, 
 							prod.discount, 
 							prod.date_created, 
-							cat.category_name 
+							cat.category_name,
+							ARRAY_AGG(DISTINCT size.size) AS sizes
 						FROM 
 							product AS prod 
 						LEFT JOIN MinImage AS mi ON mi.prodid = prod.uuid 
 						LEFT JOIN images AS img ON img.id = mi.min_image_id 
 						LEFT JOIN ref_category_product AS cat ON cat.id = prod.category_id::integer
-						%s`, stringWhere)
+						LEFT JOIN product_size AS ps ON ps.product_id = prod.uuid
+    					LEFT JOIN ref_size AS size ON size.id = ps.size_id::integer
+						%s 
+						GROUP BY
+    						prod.uuid, prod.product_name, img.file_name, prod.price, prod.discount, prod.date_created, cat.category_name
+						%s%s`, stringWhere, stringSort, stringLimit)
 
 	dbEngine := db.ConnectDB()
 
-	countProduct, err := dbEngine.QueryString(`SELECT COUNT(id) AS count FROM product`)
-	intCountProduct, _ := strconv.Atoi(countProduct[0]["count"])
+	// countProduct, err := dbEngine.QueryString(`SELECT COUNT(id) AS count FROM product`)
+	queryCount := fmt.Sprintf(`SELECT 
+									prod.uuid AS id,
+									ARRAY_AGG(DISTINCT size.size) AS sizes
+								FROM 
+									product AS prod 
+								LEFT JOIN ref_category_product AS cat ON cat.id = prod.category_id::integer
+								LEFT JOIN product_size AS ps ON ps.product_id = prod.uuid
+    							LEFT JOIN ref_size AS size ON size.id = ps.size_id::integer
+								%s
+								GROUP BY prod.uuid`, stringWhere)
+	countProduct, err := dbEngine.QueryString(queryCount)
+	fmt.Println(countProduct)
 	if err != nil {
 		Respon.Status = 500
 		Respon.Message = err.Error()
@@ -141,7 +163,7 @@ func GetProduct(sizeData, page, search, minPrice, maxPrice, sort string, idCateg
 	respData := make(map[string]interface{})
 
 	respData["product"] = arrayproduct
-	respData["total"] = intCountProduct
+	respData["total"] = len(countProduct)
 	Respon.Status = 200
 	Respon.Data = respData
 	Respon.Message = "success"
