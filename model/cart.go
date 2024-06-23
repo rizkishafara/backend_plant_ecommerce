@@ -119,3 +119,19 @@ func GetCart(user_id string) utils.Respon {
 	Respon.Data = arrayproduct
 	return Respon
 }
+func GetCountCart(user_id string) utils.Respon {
+	dbEngine := db.ConnectDB()
+	var Respon utils.Respon
+
+	result, err := dbEngine.QueryString(`SELECT COUNT(uuid) AS total FROM trans_cart WHERE user_id = ?`, user_id)
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	Respon.Status = 200
+	Respon.Message = "success"
+	Respon.Data = result[0]["total"]
+	return Respon
+}

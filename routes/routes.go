@@ -56,6 +56,7 @@ func Cart(app fiber.Router) {
 	app.Post("/cart/updatecart", controller.UpdateCart)
 	app.Post("/cart/deletecart", controller.DeleteCart)
 	app.Get("/cart/getcart", controller.GetCart)
+	app.Get("/cart/getcountcart", controller.GetCountCart)
 }
 func Reference(app *fiber.App) {
 	app.Get("/reference/province", controller.GetProvince)
