@@ -36,9 +36,8 @@ func main() {
 
 		// Set CORS headers
 
-		
-
-		log.Fatalf("Origin: %s", c.Get("Origin"))
+		log.Printf("Origin: %s", c.Get("Origin"))
+		// log.Fatalf("Origin: %s", c.Get("Origin"))
 
 		origin := c.Get("Origin")
 
