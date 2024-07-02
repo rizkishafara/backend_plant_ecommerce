@@ -79,7 +79,7 @@ func GetCountVoucher(id string) utils.Respon {
 	var Respon utils.Respon
 	getCountVoucher, err := dbEngine.QueryString(`SELECT COUNT(claim.uuid) AS count FROM claim 
 												INNER JOIN logs_claim_voucher ON claim.uuid=logs_claim_voucher.claim_id
-												WHERE claim.user_id=(?) AND claim.active='1'`, id)
+												WHERE claim.user_id=(?) AND claim.active=true`, id)
 	if err != nil {
 		Respon.Status = 500
 		Respon.Message = err.Error()
@@ -197,6 +197,40 @@ func GetAddress(id string) utils.Respon {
 
 	Respon.Status = 200
 	Respon.Data = getAddress
+	Respon.Message = "success"
+	return Respon
+}
+func GetUserVoucher(id_user string) utils.Respon {
+	dbEngine := db.ConnectDB()
+	var Respon utils.Respon
+
+	getVoucher, err := dbEngine.QueryString(`SELECT claim.active, log.uuid, log.voucher_user
+											FROM claim
+											RIGHT JOIN logs_claim_voucher AS log ON claim.uuid=log.claim_id
+											WHERE claim.user_id=(?)
+												AND claim.active=true`, id_user)
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+
+	var datares = make(map[interface{}]interface{})
+	var voucher []string
+	if getVoucher != nil {
+		for i, _ := range getVoucher {
+			// var min_price = getVoucher[i]["voucher_data"]
+
+			// if getVoucher[i]["voucher_data"][0]["min_price"] {
+			datares["uuid"] = getVoucher[i]["uuid"]
+			datares["active"] = getVoucher[i]["active"]
+			datares["voucher"] = getVoucher[i]["voucher_user"]
+		}
+		voucher = append(voucher, datares["voucher"].(string))
+	}
+
+	Respon.Status = 200
+	Respon.Data = voucher
 	Respon.Message = "success"
 	return Respon
 }
