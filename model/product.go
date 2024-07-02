@@ -295,7 +295,9 @@ func GetProductCategory() utils.Respon {
 	for i := 0; i < len(getCategory); i++ {
 		category := make(map[string]interface{})
 
-		category["id"] = getCategory[i]["id"]
+		intid,_:=strconv.Atoi(getCategory[i]["id"])
+
+		category["id"] = intid
 		category["category_name"] = getCategory[i]["category_name"]
 		category["description"] = getCategory[i]["description"]
 		category["image"] = fmt.Sprintf("%s/file/category/%s", Config.ServerHost, getCategory[i]["file_name"])
