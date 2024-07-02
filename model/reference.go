@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"strconv"
 	"tanaman/db"
 	"tanaman/utils"
 )
@@ -126,18 +127,19 @@ func GetShipping() utils.Respon {
 		Respon.Message = "Shipping not found"
 		return Respon
 	}
-	shipping :=make([]interface{}, 0, len(getShipping))
+	shipping := make([]interface{}, 0, len(getShipping))
 	for i := 0; i < len(getShipping); i++ {
 		ship := make(map[string]interface{})
 
-		ship["id"] = getShipping[i]["id"]
+		intid, _ := strconv.Atoi(getShipping[i]["id"])
+
+		ship["id"] = intid
 		ship["shipping"] = getShipping[i]["shipping"]
 		ship["logo"] = fmt.Sprintf("%s/file/assets/%s", Config.ServerHost, getShipping[i]["image"])
 		ship["estimated"] = getShipping[i]["estimated"]
 		shipping = append(shipping, ship)
-	
-	}
 
+	}
 
 	Respon.Status = 200
 	Respon.Data = shipping
@@ -164,13 +166,15 @@ func GetPayment() utils.Respon {
 	for i := 0; i < len(getPayment); i++ {
 		payment := make(map[string]interface{})
 
-		payment["id"] = getPayment[i]["id"]
+		intid, _ := strconv.Atoi(getPayment[i]["id"])
+
+		payment["id"] = intid
 		payment["bank_name"] = getPayment[i]["payment"]
 		// payment["image"] = getPayment[i]["image"]
 		payment["logo"] = fmt.Sprintf("%s/file/assets/%s", Config.ServerHost, getPayment[i]["image"])
 		payment["bank_number"] = getPayment[i]["bank_number"]
 		paymentMethod = append(paymentMethod, payment)
-	
+
 	}
 
 	Respon.Status = 200

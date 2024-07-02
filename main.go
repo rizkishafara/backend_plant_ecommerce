@@ -35,8 +35,16 @@ func main() {
 		c.Set("X-DNS-Prefetch-Control", "off")
 
 		// Set CORS headers
-		c.Set("Access-Control-Allow-Origin", "http://localhost:3000")
-		c.Set("Access-Control-Allow-Origin", "https://planting-ecommerce.vercel.app")
+
+		
+
+		log.Fatalf("Origin: %s", c.Get("Origin"))
+
+		origin := c.Get("Origin")
+
+		if origin == "http://localhost:3000" || origin == "https://planting-ecommerce.vercel.app" {
+			c.Set("Access-Control-Allow-Origin", origin)
+		}
 		c.Set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
 		c.Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept")
 		// Go to next middleware:
