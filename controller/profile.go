@@ -177,3 +177,16 @@ func DeleteAddress(c *fiber.Ctx) error {
 
 	return c.JSON(model.DeleteAddress(address_id))
 }
+func GetUserVoucher(c *fiber.Ctx) error {
+
+	id := utils.GetValJWT(c.Locals("user").(*jwt.Token), "idreq")
+	// sub_total := c.Query("sub_total")
+
+	if id == "" {
+		response.Status = 404
+		response.Message = "User not registered"
+		return c.JSON(response)
+	}
+
+	return c.JSON(model.GetUserVoucher(id))
+}

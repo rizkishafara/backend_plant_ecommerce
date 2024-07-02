@@ -30,6 +30,7 @@ func Profile(app fiber.Router) {
 	app.Post("/profile/updateprofile", controller.UpdateProfileUser)
 	app.Get("/profile/getcountvoucher", controller.GetCountVoucher)
 	app.Get("/profile/getcountloyalty", controller.GetCountLoyalty)
+	app.Get("/profile/uservoucher", controller.GetUserVoucher)
 
 	app.Post("/profile/addaddress", controller.AddAddress)
 	app.Post("/profile/updateaddress", controller.UpdateAddress)
@@ -55,7 +56,8 @@ func Cart(app fiber.Router) {
 	app.Post("/cart/addtocart", controller.AddToCart)
 	app.Post("/cart/updatecart", controller.UpdateCart)
 	app.Post("/cart/deletecart", controller.DeleteCart)
-	// app.Get("/cart/getcart", controller.GetCart)
+	app.Get("/cart/getcart", controller.GetCart)
+	app.Get("/cart/getcountcart", controller.GetCountCart)
 }
 func Reference(app *fiber.App) {
 	app.Get("/reference/province", controller.GetProvince)
@@ -63,6 +65,8 @@ func Reference(app *fiber.App) {
 	app.Get("/reference/district", controller.GetDistrict)
 	app.Get("/reference/village", controller.GetVillage)
 	app.Get("/reference/postalcode", controller.GetPostalCode)
+	app.Get("/reference/shipping", controller.GetShipping)
+	app.Get("/reference/payment", controller.GetPayment)
 }
 
 // admin route

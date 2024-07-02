@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"tanaman/db"
 	"tanaman/utils"
 )
@@ -107,6 +108,73 @@ func GetPostalCode(village_id string) utils.Respon {
 
 	Respon.Status = 200
 	Respon.Data = getPostalCode
+	Respon.Message = "success"
+	return Respon
+}
+func GetShipping() utils.Respon {
+	dbEngine := db.ConnectDB()
+
+	var Respon utils.Respon
+	getShipping, err := dbEngine.QueryString(`SELECT id, shipping_name as shipping, image, estimated FROM ref_shipping`)
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+	if getShipping == nil {
+		Respon.Status = 404
+		Respon.Message = "Shipping not found"
+		return Respon
+	}
+	shipping :=make([]interface{}, 0, len(getShipping))
+	for i := 0; i < len(getShipping); i++ {
+		ship := make(map[string]interface{})
+
+		ship["id"] = getShipping[i]["id"]
+		ship["shipping"] = getShipping[i]["shipping"]
+		ship["logo"] = fmt.Sprintf("%s/file/assets/%s", Config.ServerHost, getShipping[i]["image"])
+		ship["estimated"] = getShipping[i]["estimated"]
+		shipping = append(shipping, ship)
+	
+	}
+
+
+	Respon.Status = 200
+	Respon.Data = shipping
+	Respon.Message = "success"
+	return Respon
+}
+func GetPayment() utils.Respon {
+	dbEngine := db.ConnectDB()
+
+	var Respon utils.Respon
+	getPayment, err := dbEngine.QueryString(`SELECT id, bank_name as payment, image, bank_number FROM ref_payment_method`)
+	if err != nil {
+		Respon.Status = 500
+		Respon.Message = err.Error()
+		return Respon
+	}
+	if getPayment == nil {
+		Respon.Status = 404
+		Respon.Message = "Payment not found"
+		return Respon
+	}
+
+	paymentMethod := make([]interface{}, 0, len(getPayment))
+	for i := 0; i < len(getPayment); i++ {
+		payment := make(map[string]interface{})
+
+		payment["id"] = getPayment[i]["id"]
+		payment["bank_name"] = getPayment[i]["payment"]
+		// payment["image"] = getPayment[i]["image"]
+		payment["logo"] = fmt.Sprintf("%s/file/assets/%s", Config.ServerHost, getPayment[i]["image"])
+		payment["bank_number"] = getPayment[i]["bank_number"]
+		paymentMethod = append(paymentMethod, payment)
+	
+	}
+
+	Respon.Status = 200
+	Respon.Data = paymentMethod
 	Respon.Message = "success"
 	return Respon
 }
