@@ -43,14 +43,24 @@ func PostCheckout(c *fiber.Ctx) error {
 		// fmt.Println(prod)
 		getprod := model.GetCart(user_id, prod)
 
-		prdct:= getprod.Data
+		prdct := getprod.Data
 
-		fmt.Println(prdct)
+		// fmt.Println(prdct)
+		arrayproduct, _ := prdct.([]interface{})
 
-		// for i:=0; i<len(prdct); i++ {
-		// 	model.PostCheckoutDetail(uuid.New().String(), order_number, prdct[i].Size, prdct[i].Quantity, prdct[i].ProductName, prdct[i].DiscountPrice, prdct[i].Image, time.Now().Format("2006-01-02"), prdct[i].ProductID)
-		// }
+		for _, prd := range arrayproduct {
+
+			product_id := prd.(map[string]interface{})["product_id"].(string)
+			size := prd.(map[string]interface{})["size"].(string)
+			qty := prd.(map[string]interface{})["quantity"].(string)
+			product_name := prd.(map[string]interface{})["title"].(string)
+			discount_price := prd.(map[string]interface{})["price_discount"].(string)
+			image := prd.(map[string]interface{})["img"].(string)
+
+			model.PostCheckoutDetail(uuid.New().String(), order_number, size, qty, product_name, discount_price, image, time.Now().Format("2006-01-02"), product_id)
 		
+		}
+
 	}
 
 	var alamat []string
