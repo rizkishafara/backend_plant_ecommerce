@@ -13,7 +13,7 @@ func AddToCart(uuid, product_id, qty, size_id, user_id, date string) utils.Respo
 
 	cekExist, _ := dbEngine.QueryString(`SELECT * trans_cart WHERE product_id = ? AND user_id = ? AND size_id=?`, product_id, user_id, size_id)
 
-	if len(cekExist) > 0 {
+	if cekExist != nil{
 		UpdateCart(cekExist[0]["uuid"], qty, size_id, date)
 	} else {
 		_, err := dbEngine.QueryString(`INSERT INTO trans_cart (uuid, product_id, quantity, size_id, user_id, date_create) VALUES (?,?,?,?,?,?)`, uuid, product_id, qty, size_id, user_id, date)
@@ -29,6 +29,7 @@ func AddToCart(uuid, product_id, qty, size_id, user_id, date string) utils.Respo
 	Respon.Message = "success"
 	return Respon
 }
+
 func UpdateCart(chart_id, qty, size_id, date string) utils.Respon {
 	dbEngine := db.ConnectDB()
 	var Respon utils.Respon
@@ -112,6 +113,7 @@ func GetCart(user_id, chart_id string) utils.Respon {
 	for i := 0; i < len(result); i++ {
 		intPrice, _ := strconv.Atoi(result[i]["price"])
 		intDiscount, _ := strconv.Atoi(result[i]["discount"])
+		intQTY, _ := strconv.Atoi(result[i]["quantity"])
 		intPriceDiscount := intPrice - intDiscount
 
 		product := make(map[string]interface{})
@@ -121,7 +123,7 @@ func GetCart(user_id, chart_id string) utils.Respon {
 		product["image"] = fmt.Sprintf("%s/file/product/%s", Config.ServerHost, result[i]["file_name"])
 		product["price"] = intPrice
 		product["price_discount"] = intPriceDiscount
-		product["quantity"] = result[i]["quantity"]
+		product["quantity"] = intQTY
 		product["size"] = result[i]["size"]
 		arrayproduct = append(arrayproduct, product)
 	}
