@@ -5,21 +5,27 @@ import (
 	"math/rand"
 	"time"
 
+	"tanaman/model"
+
+	"github.com/gofiber/fiber/v2"
 )
 
-// func Checkout(c *fiber.Ctx) error {
+func PostCheckout(c *fiber.Ctx) error {
 
-// 	order_number := generateOrderNumber()
-// 	payment_id := c.FormValue("payment_id")
-// 	json_alamat := c.FormValue("json_alamat")
-// 	notes := c.FormValue("notes")
-// 	resi := c.FormValue("resi")
-// 	sub_total := c.FormValue("sub_total")
-// 	discount := c.FormValue("discount")
-// 	idshipping := c.FormValue("idshipping")
+	order_number := generateOrderNumber()
+	payment_id := c.FormValue("payment_id")
+	json_alamat := c.FormValue("json_alamat")
+	notes := c.FormValue("notes")
+	resi := c.FormValue("resi")
+	sub_total := c.FormValue("sub_total")
+	discount := c.FormValue("discount")
+	idshipping := c.FormValue("idshipping")
 
-// 	return c.JSON(model.Checkout())
-// }
+	var alamat []string
+	chekout := model.Checkout(order_number, payment_id, json_alamat, notes, resi, sub_total, discount, idshipping, time.Now().Format("2006-01-02"),"","","",alamat)
+
+	return c.JSON(chekout)
+}
 
 func generateOrderNumber() string {
 	// Get current date and time
