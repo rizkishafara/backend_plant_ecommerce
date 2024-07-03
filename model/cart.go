@@ -2,7 +2,6 @@ package model
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"tanaman/db"
 	"tanaman/utils"
@@ -13,7 +12,6 @@ func AddToCart(uuid, product_id, qty, size_id, user_id, date string) utils.Respo
 	var Respon utils.Respon
 
 	cekExist, _ := dbEngine.QueryString(`SELECT * FROM trans_cart WHERE product_id = ? AND user_id = ? AND size_id=?`, product_id, user_id, size_id)
-
 
 	if cekExist != nil {
 		UpdateCart(cekExist[0]["uuid"], qty, size_id, date)
