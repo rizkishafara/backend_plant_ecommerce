@@ -45,7 +45,13 @@ func main() {
 			c.Set("Access-Control-Allow-Origin", origin)
 		}
 		c.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		c.Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept")
+		c.Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization")
+
+		// Handle preflight OPTIONS request
+		if c.Method() == "OPTIONS" {
+			c.SendStatus(fiber.StatusOK)
+			return nil
+		}
 		// Go to next middleware:
 		return c.Next()
 	})
