@@ -20,10 +20,11 @@ func PostCheckout(c *fiber.Ctx) error {
 	payment_id := c.FormValue("payment_id")
 	// json_alamat := c.FormValue("json_alamat")
 	notes := c.FormValue("notes")
-	resi := c.FormValue("resi")
+	resi := "RESI/56789876"
 	sub_total := c.FormValue("sub_total")
 	discount := c.FormValue("discount")
-	idshipping := c.FormValue("idshipping")
+	idshipping := c.FormValue("shipping_id")
+	alamat:= c.FormValue("alamat")
 
 	shippingcost := model.GetShippingCost(idshipping)
 
@@ -43,19 +44,36 @@ func PostCheckout(c *fiber.Ctx) error {
 		// fmt.Println(prod)
 		getprod := model.GetCart(user_id, prod)
 
-		prdct:= getprod.Data
+		prdct := getprod.Data
 
-		fmt.Println(prdct)
+		// fmt.Println(prdct)
+		arrayproduct, _ := prdct.([]interface{})
 
-		// for i:=0; i<len(prdct); i++ {
-		// 	model.PostCheckoutDetail(uuid.New().String(), order_number, prdct[i].Size, prdct[i].Quantity, prdct[i].ProductName, prdct[i].DiscountPrice, prdct[i].Image, time.Now().Format("2006-01-02"), prdct[i].ProductID)
-		// }
+		for _, prd := range arrayproduct {
+
+			product_id := prd.(map[string]interface{})["product_id"].(string)
+			size := prd.(map[string]interface{})["size"].(string)
+			qty := prd.(map[string]interface{})["quantity"].(string)
+			product_name := prd.(map[string]interface{})["title"].(string)
+			discount_price := prd.(map[string]interface{})["price_discount"].(string)
+			image := prd.(map[string]interface{})["img"].(string)
+
+			model.PostCheckoutDetail(uuid.New().String(), order_number, size, qty, product_name, discount_price, image, time.Now().Format("2006-01-02"), product_id)
 		
+		}
+
 	}
 
-	var alamat []string
-	chekout := model.PostCheckout(uuid.New().String(), user_id, "0", order_number, payment_id, notes, resi, sub_total, shippingcost, discount, stotal_payment, time.Now().Format("2006-01-02"), alamat)
+	chekout := model.PostCheckout(uuid.New().String(), user_id, "1", order_number, payment_id, notes, resi, sub_total, shippingcost, discount, stotal_payment, time.Now().Format("2006-01-02"), alamat)
 	return c.JSON(chekout)
+}
+
+func GetProductOrder(c *fiber.Ctx) error {
+	user_id := utils.GetValJWT(c.Locals("user").(*jwt.Token), "idreq")
+	order_id := c.Params("order_id")
+
+	return c.JSON(model.GetProductOrder(user_id, order_id))
+
 }
 
 func generateOrderNumber() string {

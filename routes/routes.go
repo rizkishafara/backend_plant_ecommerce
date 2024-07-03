@@ -69,6 +69,11 @@ func Reference(app *fiber.App) {
 	app.Get("/reference/payment", controller.GetPayment)
 }
 
+func Checkout(app fiber.Router) {
+	app.Post("/checkout/order", controller.PostCheckout)
+	app.Get("/checkout/productorder", controller.GetProductOrder)
+}
+
 // admin route
 func Admin(app fiber.Router) {
 	// produk

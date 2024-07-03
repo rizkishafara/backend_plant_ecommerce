@@ -122,11 +122,13 @@ func GetCart(user_id, chart_id string) utils.Respon {
 		product["title"] = result[i]["product_name"]
 		product["image"] = fmt.Sprintf("%s/file/product/%s", Config.ServerHost, result[i]["file_name"])
 		product["price"] = intPrice
+		product["img"] = result[i]["file_name"]
 		product["price_discount"] = intPriceDiscount
 		product["quantity"] = intQTY
 		product["size"] = result[i]["size"]
 		arrayproduct = append(arrayproduct, product)
 	}
+	
 
 	Respon.Status = 200
 	Respon.Message = "success"
