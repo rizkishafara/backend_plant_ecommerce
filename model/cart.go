@@ -14,7 +14,11 @@ func AddToCart(uuid, product_id, qty, size_id, user_id, date string) utils.Respo
 	cekExist, _ := dbEngine.QueryString(`SELECT * FROM trans_cart WHERE product_id = ? AND user_id = ? AND size_id=?`, product_id, user_id, size_id)
 
 	if cekExist != nil {
-		UpdateCart(cekExist[0]["uuid"], qty, size_id, date)
+		intqty, _ := strconv.Atoi(cekExist[0]["quantity"])
+		qty, _ := strconv.Atoi(qty)
+		intqty = intqty + qty
+		sqty := fmt.Sprintf("%d", intqty)
+		UpdateCart(cekExist[0]["uuid"], sqty, size_id, date)
 	} else {
 		_, err := dbEngine.QueryString(`INSERT INTO trans_cart (uuid, product_id, quantity, size_id, user_id, date_create) VALUES (?,?,?,?,?,?)`, uuid, product_id, qty, size_id, user_id, date)
 
@@ -37,18 +41,18 @@ func UpdateCart(chart_id, qty, size_id, date string) utils.Respon {
 	query := fmt.Sprintf("UPDATE trans_cart SET")
 
 	if qty != "" && size_id != "" {
-		query += fmt.Sprintf("quantity = %s, size_id=%s", qty, size_id)
+		query += fmt.Sprintf(" quantity = %s, size_id = %s", qty, size_id)
 	} else if qty != "" {
-		query += fmt.Sprintf("quantity = %s", qty)
+		query += fmt.Sprintf(" quantity = %s", qty)
 	} else if size_id != "" {
-		query += fmt.Sprintf("size_id = %s", size_id)
+		query += fmt.Sprintf(" size_id = %s", size_id)
 	} else {
 		Respon.Status = 404
 		Respon.Message = "No data to update"
 		return Respon
 	}
 
-	query += fmt.Sprintf(", date_update = %s WHERE uuid = %s", date, chart_id)
+	query += fmt.Sprintf(", date_update = '%s' WHERE uuid = '%s'", date, chart_id)
 
 	_, err := dbEngine.QueryString(query)
 	if err != nil {
