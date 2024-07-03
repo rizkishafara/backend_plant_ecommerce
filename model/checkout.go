@@ -5,7 +5,7 @@ import (
 	"tanaman/utils"
 )
 
-func Checkout(user_id, order_number, payment_id, json_alamat, notes, resi, sub_total, discount, idshipping, date_create string) utils.Respon {
+func Checkout(uuid, user_id,status, order_number, payment_id, notes, resi, sub_total, discount, idshipping, shippingcost, date_create string, json_alamat []string) utils.Respon {
 
 	dbEngine := db.ConnectDB()
 	var Respon utils.Respon

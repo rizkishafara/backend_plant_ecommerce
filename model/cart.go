@@ -99,7 +99,7 @@ func GetCart(user_id, chart_id string) utils.Respon {
 						GROUP BY 
 							pi.product_id
 						) 
-							SELECT prod.uuid,prod.product_name title,img.file_name,prod.price,prod.discount,tc.quantity,size.size,tc.uuid AS cart_id
+							SELECT prod.uuid,prod.product_name,img.file_name,prod.price,prod.discount,tc.quantity,size.size,tc.uuid AS cart_id
 						FROM trans_cart AS tc
 						LEFT JOIN product AS prod ON prod.uuid = tc.product_id
 						LEFT JOIN MinImage AS mi ON mi.prodid = prod.uuid
