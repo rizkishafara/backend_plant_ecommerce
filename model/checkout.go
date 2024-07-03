@@ -37,3 +37,11 @@ func PostCheckoutDetail(uuid, order_id, size, quantity, product_name, discount_p
 
 	return Respon
 }
+func GetShippingCost(idshipping string) string {
+	dbEngine := db.ConnectDB()
+	shipping_cost, err := dbEngine.QueryString(`SELECT cost FROM ref_shipping WHERE id = ?`, idshipping)
+	if err != nil {
+		return "0"
+	}
+	return shipping_cost[0]["cost"]
+}

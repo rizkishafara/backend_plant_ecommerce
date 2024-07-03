@@ -116,7 +116,7 @@ func GetShipping() utils.Respon {
 	dbEngine := db.ConnectDB()
 
 	var Respon utils.Respon
-	getShipping, err := dbEngine.QueryString(`SELECT id, shipping_name as shipping, image, estimated FROM ref_shipping`)
+	getShipping, err := dbEngine.QueryString(`SELECT id, shipping_name as shipping, image, estimated, cost FROM ref_shipping`)
 	if err != nil {
 		Respon.Status = 500
 		Respon.Message = err.Error()
@@ -132,11 +132,13 @@ func GetShipping() utils.Respon {
 		ship := make(map[string]interface{})
 
 		intid, _ := strconv.Atoi(getShipping[i]["id"])
+		incost,_:=strconv.Atoi(getShipping[i]["cost"])
 
 		ship["id"] = intid
 		ship["shipping"] = getShipping[i]["shipping"]
 		ship["logo"] = fmt.Sprintf("%s/file/assets/%s", Config.ServerHost, getShipping[i]["image"])
 		ship["estimated"] = getShipping[i]["estimated"]
+		ship["cost"] = incost
 		shipping = append(shipping, ship)
 
 	}
