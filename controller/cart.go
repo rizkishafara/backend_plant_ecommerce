@@ -28,7 +28,6 @@ func AddToCart(c *fiber.Ctx) error {
 func UpdateCart(c *fiber.Ctx) error {
 	id := c.FormValue("cart_id")
 	qty := c.FormValue("qty")
-	size_id := c.FormValue("size_id")
 
 	if id == "" {
 		response.Status = 404
@@ -36,7 +35,7 @@ func UpdateCart(c *fiber.Ctx) error {
 		return c.JSON(response)
 	}
 
-	return c.JSON(model.UpdateCart(id, qty, size_id, time.Now().Format("2006-01-02")))
+	return c.JSON(model.UpdateCart(id, qty, time.Now().Format("2006-01-02")))
 }
 func DeleteCart(c *fiber.Ctx) error {
 	id := c.FormValue("cart_id")

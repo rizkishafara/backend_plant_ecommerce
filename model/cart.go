@@ -18,7 +18,7 @@ func AddToCart(uuid, product_id, qty, size_id, user_id, date string) utils.Respo
 		qty, _ := strconv.Atoi(qty)
 		intqty = intqty + qty
 		sqty := fmt.Sprintf("%d", intqty)
-		UpdateCart(cekExist[0]["uuid"], sqty, size_id, date)
+		UpdateCart(cekExist[0]["uuid"], sqty, date)
 	} else {
 		_, err := dbEngine.QueryString(`INSERT INTO trans_cart (uuid, product_id, quantity, size_id, user_id, date_create) VALUES (?,?,?,?,?,?)`, uuid, product_id, qty, size_id, user_id, date)
 
@@ -34,18 +34,14 @@ func AddToCart(uuid, product_id, qty, size_id, user_id, date string) utils.Respo
 	return Respon
 }
 
-func UpdateCart(chart_id, qty, size_id, date string) utils.Respon {
+func UpdateCart(chart_id, qty, date string) utils.Respon {
 	dbEngine := db.ConnectDB()
 	var Respon utils.Respon
 
 	query := fmt.Sprintf("UPDATE trans_cart SET")
 
-	if qty != "" && size_id != "" {
-		query += fmt.Sprintf(" quantity = %s, size_id = %s", qty, size_id)
-	} else if qty != "" {
+	if qty != "" {
 		query += fmt.Sprintf(" quantity = %s", qty)
-	} else if size_id != "" {
-		query += fmt.Sprintf(" size_id = %s", size_id)
 	} else {
 		Respon.Status = 404
 		Respon.Message = "No data to update"
