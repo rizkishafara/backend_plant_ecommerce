@@ -201,7 +201,7 @@ func GetProductDetail(uuid string) utils.Respon {
 		return Respon
 	}
 
-	getSize, err := dbEngine.QueryString(`select ps.uuid,rs.size from product_size as ps 
+	getSize, err := dbEngine.QueryString(`select ps.size_id,rs.size from product_size as ps 
 										left join ref_size as rs on ps.size_id::integer = rs.id 
 										where ps.product_id=?
 										order by rs.id asc`, getproduct[0]["uuid"])

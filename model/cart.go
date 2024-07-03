@@ -11,12 +11,18 @@ func AddToCart(uuid, product_id, qty, size_id, user_id, date string) utils.Respo
 	dbEngine := db.ConnectDB()
 	var Respon utils.Respon
 
-	_, err := dbEngine.QueryString(`INSERT INTO trans_cart (uuid, product_id, quantity, size_id, user_id, date_create) VALUES (?,?,?,?,?,?)`, uuid, product_id, qty, size_id, user_id, date)
+	cekExist, _ := dbEngine.QueryString(`SELECT * trans_cart WHERE product_id = ? AND user_id = ? AND size_id=?`, product_id, user_id, size_id)
 
-	if err != nil {
-		Respon.Status = 500
-		Respon.Message = err.Error()
-		return Respon
+	if len(cekExist) > 0 {
+		UpdateCart(cekExist[0]["uuid"], qty, size_id, date)
+	} else {
+		_, err := dbEngine.QueryString(`INSERT INTO trans_cart (uuid, product_id, quantity, size_id, user_id, date_create) VALUES (?,?,?,?,?,?)`, uuid, product_id, qty, size_id, user_id, date)
+
+		if err != nil {
+			Respon.Status = 500
+			Respon.Message = err.Error()
+			return Respon
+		}
 	}
 
 	Respon.Status = 200
@@ -74,8 +80,8 @@ func GetCart(user_id, chart_id string) utils.Respon {
 
 	var cart string
 
-	if chart_id !=""{
-		cart = fmt.Sprintf("AND tc.uuid = %s",user_id)
+	if chart_id != "" {
+		cart = fmt.Sprintf("AND tc.uuid = %s", user_id)
 	}
 
 	result, err := dbEngine.QueryString(`WITH MinImage AS (
@@ -95,7 +101,7 @@ func GetCart(user_id, chart_id string) utils.Respon {
 						LEFT JOIN images AS img ON img.id = mi.min_image_id
 						LEFT JOIN ref_category_product AS cat ON cat.id = prod.category_id::integer
 						LEFT JOIN ref_size AS size ON size.id = tc.size_id::integer
-						WHERE tc.user_id = ? `+cart, user_id)
+						WHERE tc.user_id = ?`+cart, user_id)
 	if err != nil {
 		Respon.Status = 500
 		Respon.Message = err.Error()
