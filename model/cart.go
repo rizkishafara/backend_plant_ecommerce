@@ -68,9 +68,15 @@ func DeleteCart(chart_id string) utils.Respon {
 	Respon.Message = "success"
 	return Respon
 }
-func GetCart(user_id string) utils.Respon {
+func GetCart(user_id, chart_id string) utils.Respon {
 	dbEngine := db.ConnectDB()
 	var Respon utils.Respon
+
+	var cart string
+
+	if chart_id !=""{
+		cart = fmt.Sprintf("AND tc.uuid = %s",user_id)
+	}
 
 	result, err := dbEngine.QueryString(`WITH MinImage AS (
 						SELECT 
@@ -89,7 +95,7 @@ func GetCart(user_id string) utils.Respon {
 						LEFT JOIN images AS img ON img.id = mi.min_image_id
 						LEFT JOIN ref_category_product AS cat ON cat.id = prod.category_id::integer
 						LEFT JOIN ref_size AS size ON size.id = tc.size_id::integer
-						WHERE tc.user_id = ?`, user_id)
+						WHERE tc.user_id = ? ?`, user_id, cart)
 	if err != nil {
 		Respon.Status = 500
 		Respon.Message = err.Error()

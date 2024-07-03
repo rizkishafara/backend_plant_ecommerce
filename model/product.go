@@ -203,7 +203,8 @@ func GetProductDetail(uuid string) utils.Respon {
 
 	getSize, err := dbEngine.QueryString(`select ps.uuid,rs.size from product_size as ps 
 										left join ref_size as rs on ps.size_id::integer = rs.id 
-										where ps.product_id=?`, getproduct[0]["uuid"])
+										where ps.product_id=?
+										order by rs.id asc`, getproduct[0]["uuid"])
 	if err != nil {
 		Respon.Status = 500
 		Respon.Message = err.Error()
@@ -295,7 +296,7 @@ func GetProductCategory() utils.Respon {
 	for i := 0; i < len(getCategory); i++ {
 		category := make(map[string]interface{})
 
-		intid,_:=strconv.Atoi(getCategory[i]["id"])
+		intid, _ := strconv.Atoi(getCategory[i]["id"])
 
 		category["id"] = intid
 		category["category_name"] = getCategory[i]["category_name"]
