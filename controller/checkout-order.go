@@ -20,10 +20,11 @@ func PostCheckout(c *fiber.Ctx) error {
 	payment_id := c.FormValue("payment_id")
 	// json_alamat := c.FormValue("json_alamat")
 	notes := c.FormValue("notes")
-	resi := c.FormValue("resi")
+	resi := "RESI/56789876"
 	sub_total := c.FormValue("sub_total")
 	discount := c.FormValue("discount")
-	idshipping := c.FormValue("idshipping")
+	idshipping := c.FormValue("shipping_id")
+	alamat:= c.FormValue("alamat")
 
 	shippingcost := model.GetShippingCost(idshipping)
 
@@ -63,9 +64,16 @@ func PostCheckout(c *fiber.Ctx) error {
 
 	}
 
-	var alamat []string
-	chekout := model.PostCheckout(uuid.New().String(), user_id, "0", order_number, payment_id, notes, resi, sub_total, shippingcost, discount, stotal_payment, time.Now().Format("2006-01-02"), alamat)
+	chekout := model.PostCheckout(uuid.New().String(), user_id, "1", order_number, payment_id, notes, resi, sub_total, shippingcost, discount, stotal_payment, time.Now().Format("2006-01-02"), alamat)
 	return c.JSON(chekout)
+}
+
+func GetProductOrder(c *fiber.Ctx) error {
+	user_id := utils.GetValJWT(c.Locals("user").(*jwt.Token), "idreq")
+	order_id := c.Params("order_id")
+
+	return c.JSON(model.GetProductOrder(user_id, order_id))
+
 }
 
 func generateOrderNumber() string {
