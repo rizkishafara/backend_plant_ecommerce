@@ -95,7 +95,7 @@ func GetCart(user_id, chart_id string) utils.Respon {
 						LEFT JOIN images AS img ON img.id = mi.min_image_id
 						LEFT JOIN ref_category_product AS cat ON cat.id = prod.category_id::integer
 						LEFT JOIN ref_size AS size ON size.id = tc.size_id::integer
-						WHERE tc.user_id = ? ?`, user_id, cart)
+						WHERE tc.user_id = ? `+cart, user_id)
 	if err != nil {
 		Respon.Status = 500
 		Respon.Message = err.Error()
