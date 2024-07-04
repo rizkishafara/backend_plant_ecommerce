@@ -52,6 +52,7 @@ func GetCart(c *fiber.Ctx) error {
 	user_id := utils.GetValJWT(c.Locals("user").(*jwt.Token), "idreq")
 
 	id_cart := c.Query("cartid")
+	
 	return c.JSON(model.GetCart(user_id, id_cart))
 }
 func GetCountCart(c *fiber.Ctx) error {

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"tanaman/db"
@@ -150,11 +151,24 @@ func GetCountCart(user_id string) utils.Respon {
 	Respon.Data = result[0]["total"]
 	return Respon
 }
-func GetProductChart(user_id string, chart_id []string) map[string]interface{} {
+func GetProductChart(user_id string, cart_id string) map[string]interface{} {
 	dbEngine := db.ConnectDB()
 
-	Produk := make([]interface{}, 0, len(chart_id))
-	for _, id := range chart_id {
+	fmt.Println(cart_id)
+
+	Produk := make([]interface{}, 0, len(cart_id))
+
+	var arr []string
+
+	err := json.Unmarshal([]byte(cart_id), &arr)
+	if err != nil {
+		fmt.Println("Error unmarshalling JSON:", err)
+		return nil	
+	}
+	fmt.Println(arr)
+
+	for i := 0; i < len(arr); i++ {
+		fmt.Println(arr[i])
 		getChart, err := dbEngine.QueryString(`WITH MinImage AS (
 						SELECT 
 							pi.product_id AS prodid, 
@@ -172,8 +186,8 @@ func GetProductChart(user_id string, chart_id []string) map[string]interface{} {
 						LEFT JOIN images AS img ON img.id = mi.min_image_id
 						LEFT JOIN ref_category_product AS cat ON cat.id = prod.category_id::integer
 						LEFT JOIN ref_size AS size ON size.id = tc.size_id::integer
-						WHERE tc.user_id = ? AND tc.uuid = ?  ORDER BY tc.id ASC `, user_id, id)
-		if err != nil || getChart == nil{
+						WHERE tc.user_id = (?) AND tc.uuid = (?)  ORDER BY tc.id ASC `, user_id, arr[i])
+		if err != nil || getChart == nil {
 			return nil
 		}
 
@@ -194,7 +208,7 @@ func GetProductChart(user_id string, chart_id []string) map[string]interface{} {
 		prd["quantity"] = intQTY
 		prd["sub_total"] = intQTY * intPriceDiscount
 		prd["size"] = product["size"]
-		Produk = append(Produk, product)
+		Produk = append(Produk, prd)
 
 	}
 
@@ -202,9 +216,12 @@ func GetProductChart(user_id string, chart_id []string) map[string]interface{} {
 	Respon["product"] = Produk
 	var sub_tot int
 	for _, prod := range Produk {
+		fmt.Println("produk: ",prod)
 		sub_tot += prod.(map[string]interface{})["sub_total"].(int)
 	}
 	Respon["sub_total_all"] = sub_tot
+
+	fmt.Println(Respon)
 
 	return Respon
 

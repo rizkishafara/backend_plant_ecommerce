@@ -55,9 +55,10 @@ func PostCheckout(c *fiber.Ctx) error {
 			qty := prd.(map[string]interface{})["quantity"].(string)
 			product_name := prd.(map[string]interface{})["title"].(string)
 			discount_price := prd.(map[string]interface{})["price_discount"].(string)
+			price := prd.(map[string]interface{})["price"].(string)
 			image := prd.(map[string]interface{})["img"].(string)
 
-			model.PostCheckoutDetail(uuid.New().String(), order_number, size, qty, product_name, discount_price, image, time.Now().Format("2006-01-02"), product_id)
+			model.PostCheckoutDetail(uuid.New().String(), order_number, size, qty, product_name, price, discount_price, image, time.Now().Format("2006-01-02"), product_id)
 
 		}
 
@@ -93,11 +94,8 @@ func GetProductOrder2(c *fiber.Ctx) error {
 	user_id := utils.GetValJWT(c.Locals("user").(*jwt.Token), "idreq")
 	cart := c.Query("cart_id")
 
-	var cart_id []string
-	json.Unmarshal([]byte(cart), &cart_id)
-
-	getProduct := model.GetProductChart(user_id, cart_id)
-	if getProduct != nil {
+	getProduct := model.GetProductChart(user_id, cart)
+	if getProduct == nil {
 		response.Status = 500
 		response.Message = "Error get product"
 		return c.JSON(response)
