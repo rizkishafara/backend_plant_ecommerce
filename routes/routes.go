@@ -74,6 +74,10 @@ func Checkout(app fiber.Router) {
 	// app.Get("/checkout/productorder", controller.GetProductOrder)
 	app.Get("/checkout/productorder", controller.GetProductOrder2)
 }
+func HistoryOrder(app fiber.Router) {
+	app.Get("/history/order", controller.GetHistoryOrder)
+	// app.Get("/history/orderdetail", controller.GetHistoryOrderDetail)
+}
 
 // admin route
 func Admin(app fiber.Router) {
