@@ -128,7 +128,6 @@ func GetCart(user_id, chart_id string) utils.Respon {
 		product["size"] = result[i]["size"]
 		arrayproduct = append(arrayproduct, product)
 	}
-	
 
 	Respon.Status = 200
 	Respon.Message = "success"
@@ -150,4 +149,63 @@ func GetCountCart(user_id string) utils.Respon {
 	Respon.Message = "success"
 	Respon.Data = result[0]["total"]
 	return Respon
+}
+func GetProductChart(user_id string, chart_id []string) map[string]interface{} {
+	dbEngine := db.ConnectDB()
+
+	Produk := make([]interface{}, 0, len(chart_id))
+	for _, id := range chart_id {
+		getChart, err := dbEngine.QueryString(`WITH MinImage AS (
+						SELECT 
+							pi.product_id AS prodid, 
+							MIN(img.id) AS min_image_id 
+						FROM 
+							images AS img 
+							INNER JOIN product_image AS PI ON img.uuid = pi.image_id 
+						GROUP BY 
+							pi.product_id
+						) 
+							SELECT prod.uuid,prod.product_name,img.file_name,prod.price,prod.discount,tc.quantity,size.size,tc.uuid AS cart_id
+						FROM trans_cart AS tc
+						LEFT JOIN product AS prod ON prod.uuid = tc.product_id
+						LEFT JOIN MinImage AS mi ON mi.prodid = prod.uuid
+						LEFT JOIN images AS img ON img.id = mi.min_image_id
+						LEFT JOIN ref_category_product AS cat ON cat.id = prod.category_id::integer
+						LEFT JOIN ref_size AS size ON size.id = tc.size_id::integer
+						WHERE tc.user_id = ? AND tc.uuid = ?  ORDER BY tc.id ASC `, user_id, id)
+		if err != nil || getChart == nil{
+			return nil
+		}
+
+		product := getChart[0]
+		intPrice, _ := strconv.Atoi(product["price"])
+		intDiscount, _ := strconv.Atoi(product["discount"])
+		intQTY, _ := strconv.Atoi(product["quantity"])
+		intPriceDiscount := intPrice - intDiscount
+
+		prd := make(map[string]interface{})
+		prd["product_id"] = product["uuid"]
+		prd["cart_id"] = product["cart_id"]
+		prd["title"] = product["product_name"]
+		prd["image"] = fmt.Sprintf("%s/file/product/%s", Config.ServerHost, product["file_name"])
+		prd["price"] = intPrice
+		prd["img"] = product["file_name"]
+		prd["price_discount"] = intPriceDiscount
+		prd["quantity"] = intQTY
+		prd["sub_total"] = intQTY * intPriceDiscount
+		prd["size"] = product["size"]
+		Produk = append(Produk, product)
+
+	}
+
+	Respon := make(map[string]interface{})
+	Respon["product"] = Produk
+	var sub_tot int
+	for _, prod := range Produk {
+		sub_tot += prod.(map[string]interface{})["sub_total"].(int)
+	}
+	Respon["sub_total_all"] = sub_tot
+
+	return Respon
+
 }
