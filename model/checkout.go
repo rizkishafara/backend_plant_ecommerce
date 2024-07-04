@@ -11,7 +11,7 @@ func PostCheckout(uuid, user_id, status, order_number, payment_method_id, notes,
 	dbEngine := db.ConnectDB()
 	var Respon utils.Respon
 
-	_, err := dbEngine.QueryString(`INSERT INTO trans_order (uuid, user_id, status, order_number, payment_method_id, notes, resi, sub_total, shipping_cost, discount, total_payment, date_create) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`, uuid, user_id, status, order_number, payment_method_id, notes, resi, sub_total, shipping_cost, discount, total_payment, date_create)
+	_, err := dbEngine.QueryString(`INSERT INTO trans_order (uuid, user_id, status, order_number, payment_method_id, notes, resi, sub_total, shipping_cost, discount, total_payment, date_create, delivery_address) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, uuid, user_id, status, order_number, payment_method_id, notes, resi, sub_total, shipping_cost, discount, total_payment, date_create, json_alamat)
 	if err != nil {
 		Respon.Status = 500
 		Respon.Message = err.Error()

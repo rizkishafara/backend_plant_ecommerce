@@ -18,7 +18,6 @@ func PostCheckout(c *fiber.Ctx) error {
 	user_id := utils.GetValJWT(c.Locals("user").(*jwt.Token), "idreq")
 	order_number := generateOrderNumber()
 	payment_id := c.FormValue("payment_id")
-	// json_alamat := c.FormValue("json_alamat")
 	notes := c.FormValue("notes")
 	resi := "RESI/56789876"
 	sub_total := c.FormValue("sub_total")
