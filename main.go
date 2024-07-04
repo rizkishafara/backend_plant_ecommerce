@@ -75,6 +75,7 @@ func main() {
 	routes.Profile(app2)
 	routes.Cart(app2)
 	routes.Checkout(app2)
+	routes.HistoryOrder(app2)
 	routes.Admin(app2)
 
 	host := fmt.Sprintf(":%d", config.ServerPort)

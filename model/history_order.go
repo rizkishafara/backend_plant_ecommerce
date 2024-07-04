@@ -25,16 +25,17 @@ func GetListHistoryOrder(user_id string) utils.Respon {
 										FROM 
 											trans_order t
 										JOIN 
-											detail_order d ON t.trans_order_id = d.trans_order_id
+											order_detail d ON t.uuid = d.trans_order_id
 										WHERE 
-											d.detail_order_id = (
+											d.uuid = (
 												SELECT 
-													MIN(detail_order_id) 
+													MIN(uuid) 
 												FROM 
-													detail_order 
+													order_detail 
 												WHERE 
-													trans_order_id = t.trans_order_id
-											); `)
+													trans_order_id = t.uuid
+											)
+										AND t.user_id = ?`, user_id)
 	if err != nil {
 		Respon.Status = 500
 		Respon.Message = err.Error()
