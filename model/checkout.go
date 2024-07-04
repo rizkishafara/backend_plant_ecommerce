@@ -22,12 +22,12 @@ func PostCheckout(uuid, user_id, status, order_number, payment_method_id, notes,
 
 	return Respon
 }
-func PostCheckoutDetail(uuid, order_id, size, quantity, product_name, discount_price, image, date_create, product_id string) utils.Respon {
+func PostCheckoutDetail(uuid, order_id, size, quantity, product_name, price, discount_price, image, date_create, product_id string) utils.Respon {
 
 	dbEngine := db.ConnectDB()
 	var Respon utils.Respon
 
-	_, err := dbEngine.QueryString(`INSERT INTO order_detail (uuid, trans_order_id, size, quantity, product_name, discount_price, image, date_create, product_id) VALUES (?,?,?,?,?,?,?,?,?)`, uuid, order_id, size, quantity, product_name, discount_price, image, date_create, product_id)
+	_, err := dbEngine.QueryString(`INSERT INTO order_detail (uuid, trans_order_id, size, quantity, product_name, price, discount_price, image, date_create, product_id) VALUES (?,?,?,?,?,?,?,?,?,?)`, uuid, order_id, size, quantity, product_name, price, discount_price, image, date_create, product_id)
 	if err != nil {
 		Respon.Status = 500
 		Respon.Message = err.Error()
@@ -58,6 +58,7 @@ func GetProductOrder(user_id, order_id string) utils.Respon {
 												od.product_name,
 												od.size,
 												od.quantity,
+												od.price,
 												od.discount_price,
 												od.image,
 												od.product_id
@@ -78,6 +79,7 @@ func GetProductOrder(user_id, order_id string) utils.Respon {
 	for _, prod := range getProductOrder {
 		intQTY, _ := strconv.Atoi(prod["quantity"])
 		intDiscount, _ := strconv.Atoi(prod["discount_price"])
+		intPrice, _ := strconv.Atoi(prod["price"])
 		intSubTotal := intQTY * intDiscount
 		prd := make(map[string]interface{})
 		prd["uuid"] = prod["uuid"]
@@ -85,6 +87,7 @@ func GetProductOrder(user_id, order_id string) utils.Respon {
 		prd["size"] = prod["size"]
 		prd["quantity"] = intQTY
 		prd["discount_price"] = intDiscount
+		prd["price"] = intPrice
 		prd["subtot_price"] = intSubTotal
 		prd["image"] = prod["image"]
 		prd["product_id"] = prod["product_id"]
