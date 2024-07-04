@@ -71,7 +71,8 @@ func Reference(app *fiber.App) {
 
 func Checkout(app fiber.Router) {
 	app.Post("/checkout/order", controller.PostCheckout)
-	app.Get("/checkout/productorder", controller.GetProductOrder)
+	// app.Get("/checkout/productorder", controller.GetProductOrder)
+	app.Get("/checkout/productorder", controller.GetProductOrder2)
 }
 
 // admin route

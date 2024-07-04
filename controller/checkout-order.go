@@ -24,7 +24,7 @@ func PostCheckout(c *fiber.Ctx) error {
 	sub_total := c.FormValue("sub_total")
 	discount := c.FormValue("discount")
 	idshipping := c.FormValue("shipping_id")
-	alamat:= c.FormValue("alamat")
+	alamat := c.FormValue("alamat")
 
 	shippingcost := model.GetShippingCost(idshipping)
 
@@ -59,7 +59,7 @@ func PostCheckout(c *fiber.Ctx) error {
 			image := prd.(map[string]interface{})["img"].(string)
 
 			model.PostCheckoutDetail(uuid.New().String(), order_number, size, qty, product_name, discount_price, image, time.Now().Format("2006-01-02"), product_id)
-		
+
 		}
 
 	}
@@ -89,4 +89,22 @@ func generateOrderNumber() string {
 	orderNumber := fmt.Sprintf("INV/%s%03d", dateTimeFormat, uniqueID)
 
 	return orderNumber
+}
+func GetProductOrder2(c *fiber.Ctx) error {
+	user_id := utils.GetValJWT(c.Locals("user").(*jwt.Token), "idreq")
+	cart := c.Query("cart_id")
+
+	var cart_id []string
+	json.Unmarshal([]byte(cart), &cart_id)
+
+	getProduct := model.GetProductChart(user_id, cart_id)
+	if getProduct != nil {
+		response.Status = 500
+		response.Message = "Error get product"
+		return c.JSON(response)
+	}
+	response.Status = 200
+	response.Message = "Success"
+	response.Data = getProduct
+	return c.JSON(response)
 }
